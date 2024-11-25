@@ -19,9 +19,9 @@ export const useAuth = () => {
 
     useEffect(() => {
         if (isLoading) return;
-        const inAuthGroup: boolean = segments.includes('auth');
+        const inAuthGroup: boolean = segments.includes('(auth)');
         if (user && inAuthGroup) {
-            router.replace('/(tabs)');
+            router.replace('../(tabs)');
         } else if (!user && !inAuthGroup) {
             router.replace('../(auth)/login');
         }

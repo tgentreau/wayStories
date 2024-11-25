@@ -1,3 +1,4 @@
+import { createUser, getUserById } from "@/services/userService";
 import { SignInFormInputs } from "@/types/user";
 import { Button, Input } from "@rneui/themed";
 import { Router, useRouter } from "expo-router";
@@ -18,6 +19,7 @@ export default function SigninForm() {
             setLoading(true);
             const auth = getAuth()
             const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
+            await createUser(userCredential.user.uid, data.username);
             router.replace('/(tabs)');
         } catch (error) {
             console.error(error);
@@ -30,16 +32,16 @@ export default function SigninForm() {
         <View style={styles.container}>
         <Controller
           control={control}
-          name="name"
+          name="username"
           rules={{
-            required: 'Nom requis'
+            required: 'Pseudo requis'
           }}
           render={({ field: { onChange, value } }) => (
             <Input
-              placeholder="Nom complet"
+              placeholder="Pseudonyme"
               onChangeText={onChange}
               value={value}
-              errorMessage={errors.name?.message}
+              errorMessage={errors.username?.message}
             />
           )}
         />

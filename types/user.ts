@@ -10,7 +10,7 @@ export type UserSignin = {
 }
 
 export type SignInFormInputs = {
-    name: string;
+    username: string;
     email: string;
     password: string;
     confirmPassword: string;

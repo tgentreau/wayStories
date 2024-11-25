@@ -5,6 +5,7 @@ import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { Router, useRouter } from "expo-router";
 import { View, StyleSheet} from "react-native";
 import { Button, Input } from "@rneui/themed";
+import { getUserById } from "@/services/userService";
 
 export default function LoginForm() {
     const { control, handleSubmit, formState: { errors } } = useForm<UserLogin>();
@@ -15,7 +16,7 @@ export default function LoginForm() {
         try {
             setLoading(true);
             const auth = getAuth();
-            await signInWithEmailAndPassword(auth, data.email, data.password);
+            const response = await signInWithEmailAndPassword(auth, data.email, data.password);
             router.replace('/(tabs)');
         } catch (error) {
             console.error(error);

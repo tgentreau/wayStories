@@ -9,7 +9,7 @@ export default function Login() {
             <Text h3 style={styles.title}>Connexion</Text>
             <LoginForm />
             <Link 
-                href="/(auth)/signin"
+                href="../(auth)/signin"
                 style={styles.link}
             >
                 Pas encore de compte ? S'inscrire

@@ -1,5 +1,5 @@
 import { UserSignin, UserLogin } from '@/types/user';
-import { getAuth } from '@react-native-firebase/auth';
+import { Auth, getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export const authApi = createApi({
@@ -9,8 +9,8 @@ export const authApi = createApi({
         signin: builder.mutation({
             async queryFn(user: UserSignin) {
                 try {
-                    const auth = getAuth();
-                    const response = await auth.createUserWithEmailAndPassword(user.email, user.password);
+                    const auth: Auth = getAuth();
+                    const response = await createUserWithEmailAndPassword(auth, user.email, user.password);
                     return { data: response };
                 } catch (error) {
                     return { error };
@@ -21,7 +21,7 @@ export const authApi = createApi({
             async queryFn(user: UserLogin) {
                 try {
                     const auth = getAuth();
-                    const response = await auth.signInWithEmailAndPassword(user.email, user.password);
+                    const response = await signInWithEmailAndPassword(auth, user.email, user.password);
                     return { data: response };
                 } catch (error) {
                     return { error };
@@ -30,3 +30,7 @@ export const authApi = createApi({
         })
     }),
 })
+
+function signInWithEmailAndPassword(auth: Auth, email: string, password: string) {
+    throw new Error('Function not implemented.');
+}

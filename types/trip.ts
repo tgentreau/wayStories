@@ -3,6 +3,8 @@ type Trip = {
     name: string
     startDate: string
     endDate: string
-    user: any
+    userId: string
     resume: string
+    pictures: string[]
+    currentTrip: boolean
 }

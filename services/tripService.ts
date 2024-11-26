@@ -1,18 +1,27 @@
 import { db } from "@/config/firebase/firebaseConfig";
+import { getAuth } from "firebase/auth";
 import { collection, query, where, getDocs, addDoc, deleteDoc, doc } from "firebase/firestore";
 
 const tripsCollectionRef = collection(db, "trips");
 
 const getAllTrips = async () => {
-    const userCollectionSnapshot = await getDocs(tripsCollectionRef);
-    const trips = userCollectionSnapshot.docs.map(doc => doc.data());
-    return trips
+    const auth = getAuth();
+    const tripsCollectionQuery = query(tripsCollectionRef, where("userId", "==", auth.currentUser?.uid), where("currentTrip", "==", false));
+    const tripsCollectionSnapshot = await getDocs(tripsCollectionQuery);
+    return tripsCollectionSnapshot.docs.map(doc => doc.data()) as Trip[];
+}
+
+const getCurrentTrip = async () => {
+    const auth = getAuth();
+    const tripsCollectionQuery = query(tripsCollectionRef, where("userId", "==", auth.currentUser?.uid), where("currentTrip", "==", true));
+    const tripsCollectionSnapshot = await getDocs(tripsCollectionQuery);
+    return tripsCollectionSnapshot.docs[0].data() as Trip;
 }
 
 const getTripById = async (id: string) => {
-    const userCollectionQuery = query(tripsCollectionRef, where("id", "==", id));
-    const userCollectionSnapshot = await getDocs(userCollectionQuery);
-    return userCollectionSnapshot.docs[0].data();
+    const tripsCollectionQuery = query(tripsCollectionRef, where("id", "==", id));
+    const tripsCollectionSnapshot = await getDocs(tripsCollectionQuery);
+    return tripsCollectionSnapshot.docs[0].data() as Trip;
 }
 
 const createTrip = async (trip: Trip) => {
@@ -28,4 +37,4 @@ const deleteTrip = async (id: string) => {
     return;
 }
 
-export { getAllTrips, getTripById, createTrip, deleteTrip };
+export { getAllTrips, getTripById, createTrip, deleteTrip, getCurrentTrip };

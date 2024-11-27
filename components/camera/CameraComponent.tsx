@@ -1,5 +1,5 @@
 import {CameraType, CameraView, useCameraPermissions} from "expo-camera";
-import {useEffect, useRef, useState} from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import {Animated, Button, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import * as Location from 'expo-location';
@@ -7,15 +7,31 @@ import * as MediaLibrary from 'expo-media-library';
 import {getAuth} from "firebase/auth";
 import {uploadFile} from "@/config/aws/uploadFile";
 import {createPicture} from "@/services/pictureService";
-
+import {getCurrentTrip} from "@/services/tripService";
+import CustomDialogComponent from "@/components/dialog/CustomDialogComponent";
+import {useFocusEffect} from "@react-navigation/core";
 
 export default function CameraComponent() {
+    const BASE_URL_AWS = "https://waystory.s3.eu-north-1.amazonaws.com/";
     const [facing, setFacing] = useState<CameraType>('back');
     const [permission, requestPermission] = useCameraPermissions();
     const [location, setLocation] = useState<Location.LocationObject | null>(null);
+    const [currentTrip, setCurrentTrip] = useState<Trip | null>(null);
+    const [isDialogVisible, setDialogVisible] = useState(true);
     const cameraRef = useRef<CameraView>(null);
     const rotation = useRef(new Animated.Value(0)).current;
-    const BASE_URL_AWS = "https://waystory.s3.eu-north-1.amazonaws.com/";
+
+    useFocusEffect(
+        useCallback(() => {
+            (async () => {
+                const trip = await getCurrentTrip();
+                setCurrentTrip(trip);
+                if (!trip) {
+                    setDialogVisible(true);
+                }
+            })();
+        }, [])
+    );
 
     useEffect(() => {
         (async () => {
@@ -24,11 +40,8 @@ export default function CameraComponent() {
                 console.log('Permission to access location was denied');
                 return;
             }
-
-            let location = await Location.getCurrentPositionAsync({});
-            setLocation(location);
         })();
-    }, []);
+    }, [currentTrip]);
 
     if (!permission) {
         return <View/>;
@@ -66,6 +79,9 @@ export default function CameraComponent() {
 
     async function takePicture() {
         if (cameraRef.current) {
+            let location = await Location.getCurrentPositionAsync({});
+            setLocation(location);
+
             const pictureOptions = {
                 exif: true,
                 additionalExif: location ? {
@@ -87,30 +103,58 @@ export default function CameraComponent() {
     };
 
     const savePicture = async (photo: any) => {
-        const auth = getAuth();
-        const user = auth.currentUser!;
+        if (currentTrip) {
+            const auth = getAuth();
+            const user = auth.currentUser!;
+            await uploadFile(photo);
+            const name = getFileName(photo.uri)
+            await createPicture(
+                user.uid,
+                photo.exif.DateTimeOriginal.split(' ')[0],
+                BASE_URL_AWS + name,
+                photo.exif.GPSLatitude,
+                photo.exif.GPSLongitude,
+                'tripId',
+                name
+            );
+        }
         await MediaLibrary.saveToLibraryAsync(photo.uri);
-        await uploadFile(photo);
-        const name = getFileName(photo.uri)
-        await createPicture(
-            user.uid,
-            new Date().toISOString(),
-            BASE_URL_AWS + name,
-            photo.exif.GPSLatitude,
-            photo.exif.GPSLongitude,
-            'tripId',
-            name
-        );
+    };
+
+    const handleCloseDialog = () => {
+        setDialogVisible(false);
     };
 
     return (
         <View style={styles.container}>
             <CameraView ref={cameraRef} style={styles.camera} facing={facing}>
-                <TouchableOpacity style={styles.buttonCamera} onPress={takePicture}>
-                    <FontAwesome name="camera" size={40} color="white"/>
+                {!currentTrip ?
+                    <CustomDialogComponent
+                        visible={isDialogVisible}
+                        message={"Vous n'avez pas de voyage en cours, les photos seront enregistrées dans votre galerie."}
+                        onClose={handleCloseDialog}
+                    />
+                    : null
+                }
+                <TouchableOpacity
+                    style={styles.buttonCamera}
+                    onPress={takePicture}
+                >
+                    <FontAwesome
+                        name="camera"
+                        size={40}
+                        color="white"
+                    />
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.buttonRotate, animatedStyle]} onPress={toggleCameraFacing}>
-                    <FontAwesome name="refresh" size={24} color="white"/>
+                <TouchableOpacity
+                    style={[styles.buttonRotate, animatedStyle]}
+                    onPress={toggleCameraFacing}
+                >
+                    <FontAwesome
+                        name="refresh"
+                        size={24}
+                        color="white"
+                    />
                 </TouchableOpacity>
             </CameraView>
         </View>

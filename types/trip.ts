@@ -3,6 +3,22 @@ type Trip = {
     name: string
     startDate: string
     endDate: string
-    user: any
+    userId: string
     resume: string
+    pictures: string[]
+    currentTrip: boolean
+}
+
+type CreateTripForm = {
+    name: string
+    resume: string
+}
+
+type CreateTripData = {
+    name: string
+    startDate: string
+    endDate: string | null
+    userId: string
+    resume: string
+    currentTrip: boolean
 }

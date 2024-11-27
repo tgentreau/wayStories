@@ -74,8 +74,8 @@ export default function SigninForm() {
           rules={{
             required: 'Mot de passe requis',
             minLength: {
-              value: 6,
-              message: 'Le mot de passe doit contenir au moins 6 caractères'
+              value: 8,
+              message: 'Le mot de passe doit contenir au moins 8 caractères'
             }
           }}
           render={({ field: { onChange, value } }) => (

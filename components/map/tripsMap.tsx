@@ -5,7 +5,6 @@ export default function TripsMap() {
     return (
         <View style={styles.container}>
             <MapView
-                provider="google"
                 style={styles.map}
                 initialRegion={{
                     latitude: 37.78825,

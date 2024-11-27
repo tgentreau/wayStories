@@ -9,9 +9,14 @@ export default function CurrentUserTrip() {
 
     useEffect(() => {
         async function fetchTrip() {
-            const tripData: Trip = await getCurrentTrip();
-            setTrip(tripData);
-            setLoading(false);
+            try {
+                const tripData: Trip = await getCurrentTrip();
+                setTrip(tripData);
+                setLoading(false);
+            } catch (error) {
+                console.error(error);
+                setLoading(false);
+            }
         }
         fetchTrip();
     }, []);

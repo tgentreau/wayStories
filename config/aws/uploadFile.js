@@ -27,7 +27,7 @@ export async function uploadFile(fileToUpload) {
                 console.log("Error : ", 'Failed to upload image to S3', response);
                 return;
             }
-            console.log('Successfully uploaded image to S3', response.body.postResponse.location);
-            return response.body.postResponse.location;
+            console.log('Successfully uploaded image to S3', response.body.postResponse.key);
+            return response.body.postResponse;
         });
 }

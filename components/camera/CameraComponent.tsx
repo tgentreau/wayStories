@@ -15,6 +15,7 @@ export default function CameraComponent() {
     const [location, setLocation] = useState<Location.LocationObject | null>(null);
     const cameraRef = useRef<CameraView>(null);
     const rotation = useRef(new Animated.Value(0)).current;
+    const BASE_URL_AWS = "https://waystory.s3.eu-north-1.amazonaws.com/";
 
     useEffect(() => {
         (async () => {
@@ -71,11 +72,10 @@ export default function CameraComponent() {
                     GPSLatitude: location.coords.latitude,
                     GPSLongitude: location.coords.longitude,
                     GPSAltitude: location.coords.altitude,
-                } : undefined,
-                // base64: true,
+                } : undefined
             };
             const photo = await cameraRef.current.takePictureAsync(pictureOptions);
-            if (photo && !photo.base64 && photo.exif.GPSLongitude && photo.exif.GPSLatitude) {
+            if (photo && photo.exif.GPSLongitude && photo.exif.GPSLatitude) {
                 await savePicture(photo);
             }
         }
@@ -90,15 +90,16 @@ export default function CameraComponent() {
         const auth = getAuth();
         const user = auth.currentUser!;
         await MediaLibrary.saveToLibraryAsync(photo.uri);
-        const awsResponse = await uploadFile(photo);
+        await uploadFile(photo);
+        const name = getFileName(photo.uri)
         await createPicture(
             user.uid,
             new Date().toISOString(),
-            awsResponse,
+            BASE_URL_AWS + name,
             photo.exif.GPSLatitude,
             photo.exif.GPSLongitude,
             'tripId',
-            getFileName(photo.uri)
+            name
         );
     };
 

@@ -25,4 +25,6 @@ const createPicture = async (userId: string, date: string, link: string, localis
     }
 }
 
+
+
 export { getPictureById, createPicture };

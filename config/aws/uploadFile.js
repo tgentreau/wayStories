@@ -10,17 +10,18 @@ export async function uploadFile(fileToUpload) {
     };
 
     const getFileNameFromUri = () => {
+
         const segments = fileToUpload.uri.split('/');
         return segments[segments.length - 1];
     };
-
     const file = {
         uri: fileToUpload.uri,
         name: getFileNameFromUri(),
-        type: 'image',
+        type: fileToUpload.type || 'image/jpeg',
     };
 
-    return RNS3.put(file, options)
+    return RNS3
+        .put(file, options)
         .then(response => {
             if (response.status !== 201) {
                 console.log("Error : ", 'Failed to upload image to S3', response);

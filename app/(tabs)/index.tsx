@@ -6,6 +6,7 @@ import CurrentUserTrip from '@/components/trips/CurrentUserTrip';
 import {Button} from '@rneui/base';
 import {Router, useRouter} from 'expo-router';
 import {Image} from 'expo-image';
+import UserName from "@/components/user/userName";
 
 export default function TabOneScreen() {
 
@@ -17,7 +18,7 @@ export default function TabOneScreen() {
 
     return (
         <View style={styles.container}>
-            <Image style={styles.image} source="https://waystory.s3.eu-north-1.amazonaws.com/22ad4cb1-217f-4779-8341-f9de963b0553.jpg"/>
+            <UserName/>
             <Button
                 title="Créer une nouvelle WayStory"
                 buttonStyle={{

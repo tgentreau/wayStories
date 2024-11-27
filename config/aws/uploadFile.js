@@ -17,7 +17,7 @@ export async function uploadFile(fileToUpload) {
     const file = {
         uri: fileToUpload.uri,
         name: getFileNameFromUri(),
-        type: fileToUpload.type || 'image/jpeg',
+        type: fileToUpload.type || 'image/png',
     };
 
     return RNS3

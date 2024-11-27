@@ -32,9 +32,15 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
-          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
+          "cameraPermission": "Autoriser $(PRODUCT_NAME) à accéder à votre appareil photo",
+          "microphonePermission": "Autoriser $(PRODUCT_NAME) à acceder à votre microphone",
           "recordAudioAndroid": true
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "L'application a besoin d'accéder à vos photos pour vous permettre d'avoir une meilleure expérience de suivie."
         }
       ]
     ],

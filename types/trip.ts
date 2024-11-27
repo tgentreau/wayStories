@@ -8,3 +8,17 @@ type Trip = {
     pictures: string[]
     currentTrip: boolean
 }
+
+type CreateTripForm = {
+    name: string
+    resume: string
+}
+
+type CreateTripData = {
+    name: string
+    startDate: string
+    endDate: string | null
+    userId: string
+    resume: string
+    currentTrip: boolean
+}

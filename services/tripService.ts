@@ -24,7 +24,7 @@ const getTripById = async (id: string) => {
     return tripsCollectionSnapshot.docs[0].data() as Trip;
 }
 
-const createTrip = async (trip: Trip) => {
+const createTrip = async (trip: CreateTripData) => {
     try {
         await addDoc(tripsCollectionRef, trip);
     } catch (error) {

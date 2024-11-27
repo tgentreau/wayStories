@@ -24,9 +24,6 @@ export default function CurrentUserTrip() {
         return <Text>Aucune WayStory en cours</Text>;
     }
 
-    console.log("trip: ", trip);
-    
-
     return (
         <View>
             <Text>{trip.name}</Text>

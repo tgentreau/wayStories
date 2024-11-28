@@ -37,14 +37,13 @@ export default function EditUserProfileForm() {
 
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ['images', 'videos'],
+            mediaTypes: ['images'],
             allowsEditing: true,
             aspect: [4, 3],
             quality: 1,
         });
 
         if (!result.canceled) {
-            console.log('result : ', result);
             setImageProfile(result);
         }
     };
@@ -52,32 +51,21 @@ export default function EditUserProfileForm() {
     const onValidateEdit = async () => {
         try {
             setLoading(true);
+            let profilePictureLink = currentImageProfile;
+
             if (imageProfile) {
                 const response = await uploadFile(imageProfile.assets[0]);
-                setCurrentImageProfile(response.Location);
-                setNewUserProfile({
-                    ...newUserProfile,
-                    profilePictureLink: response.Location
-                })
+                profilePictureLink = response.location;
             }
 
-            setNewUserProfile((prevState) => {
-                console.log('prevState ', prevState);
-                console.log('bio ', bio);
-                return {
-                    ...newUserProfile,
-                    ...prevState,
-                    username: userName,
-                    biographie: bio
-                }
-            })
-            console.log(bio);
-            console.log(newUserProfile);
+            const updatedUserProfile: UserProfilEdited = {
+                username: userName,
+                biographie: bio,
+                profilePictureLink: profilePictureLink
+            };
 
-            if (newUserProfile) {
-                updateUser(newUserProfile);
-                router.replace('/(tabs)');
-            }
+            await updateUser(updatedUserProfile);
+            router.replace('/(tabs)');
 
         } catch (error) {
             console.error(error);
@@ -101,14 +89,16 @@ export default function EditUserProfileForm() {
                     imageProfile ?
                         <Image
                             source={{uri: imageProfile.assets[0].uri}}
-                            style={{
-                                width: 100,
-                                height: 100,
-                                borderRadius: 50,
-                            }}
+                            style={styles.image}
                         />
                         :
-                        <FontAwesome name="camera" size={50} color="gray"/>
+                        currentImageProfile ?
+                            <Image
+                                source={{uri: currentImageProfile}}
+                                style={styles.image}
+                            />
+                            :
+                            <FontAwesome name="camera" size={50} color="gray"/>
                 }
             </TouchableOpacity>
             <Input
@@ -130,20 +120,9 @@ export default function EditUserProfileForm() {
                 title="Valider"
                 onPress={handleSubmit(onValidateEdit)}
                 loading={loading}
-                buttonStyle={{
-                    backgroundColor: '#AA0101',
-                    borderColor: 'white',
-                    borderRadius: 20,
-                    padding: 20,
-                }}
-                containerStyle={{
-                    marginHorizontal: 20,
-                    marginVertical: 20,
-                    width: '90%',
-                }}
-                titleStyle={{
-                    fontWeight: 'bold'
-                }}
+                buttonStyle={styles.button}
+                containerStyle={styles.buttonContainer}
+                titleStyle={styles.buttonTitle}
             />
         </View>
     );
@@ -165,10 +144,29 @@ const styles = StyleSheet.create({
         marginHorizontal: 'auto',
         marginBottom: 20,
     },
+    image: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 50,
+    },
     textArea: {
         height: 150,
         borderColor: 'gray',
         borderWidth: 1,
         margin: 10
+    },
+    button: {
+        backgroundColor: '#AA0101',
+        borderColor: 'white',
+        borderRadius: 20,
+        padding: 20,
+    },
+    buttonContainer: {
+        marginHorizontal: 20,
+        marginVertical: 20,
+        width: '90%',
+    },
+    buttonTitle: {
+        fontWeight: 'bold'
     }
 });

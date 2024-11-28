@@ -1,4 +1,5 @@
 import { createTrip } from '@/services/tripService';
+import { CreateTripData, CreateTripForm } from '@/types/trip';
 import { Button, Input } from '@rneui/themed';
 import { Router, useRouter } from 'expo-router';
 import { getAuth } from 'firebase/auth';

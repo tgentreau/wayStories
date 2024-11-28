@@ -16,6 +16,11 @@ export type TripFirestore = {
     data: Trip
 }
 
+export type AllTrips = {
+    id: string
+    data: Trip[]
+}
+
 export type CreateTripForm = {
     name: string
     resume: string

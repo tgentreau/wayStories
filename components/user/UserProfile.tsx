@@ -5,6 +5,7 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import {getAuth} from "firebase/auth";
 import {getUserById} from "@/services/userService";
 import {Image} from 'expo-image';
+import {getAllTrips} from "@/services/tripService";
 
 export default function UserProfile() {
     const [userLogged, setUserLogged] = useState<any>(null);
@@ -29,6 +30,9 @@ export default function UserProfile() {
         if (userLogged) {
             const user = await getUserById(userLogged.uid);
             setUserName(user.username);
+            setWaystoryCount((await getAllTrips()).length + 1);
+            setBio(user.biographie ?? null);
+            setProfilePictureLink(user.profilePictureLink ?? null);
         }
     }
 

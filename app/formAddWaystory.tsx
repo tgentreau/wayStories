@@ -1,10 +1,8 @@
-import { StatusBar } from 'expo-status-bar';
-import { Platform, StyleSheet, TouchableOpacity } from 'react-native';
-import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-
-import EditScreenInfo from '@/components/EditScreenInfo';
-import { Text, View } from '@/components/Themed';
+import {StatusBar} from 'expo-status-bar';
+import {Platform, StyleSheet, TouchableOpacity} from 'react-native';
+import {router} from 'expo-router';
+import {Ionicons} from '@expo/vector-icons';
+import {Text, View} from '@/components/Themed';
 import CreateWayStoryForm from '@/components/trips/CreateWayStoryForm';
 
 export default function ModalScreen() {

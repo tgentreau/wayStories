@@ -13,7 +13,6 @@ export default function AllUserTrips() {
     useEffect(() => {
         async function fetchTrips() {
             const tripsData = await getAllTrips();
-            console.log('tripDatas ', tripsData);
             tripsData.forEach(trip => {
                 setTrips(
                     [{

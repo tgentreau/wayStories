@@ -11,7 +11,7 @@ export default function TabOneScreen() {
     const router: Router = useRouter();
 
     const onClick = () => {
-        router.push('/formAddWaystoryForm');
+        router.push('/formAddWaystory');
     }
 
     return (

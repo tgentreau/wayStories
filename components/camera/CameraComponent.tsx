@@ -7,9 +7,10 @@ import * as MediaLibrary from 'expo-media-library';
 import {getAuth} from "firebase/auth";
 import {uploadFile} from "@/config/aws/uploadFile";
 import {createPicture} from "@/services/pictureService";
-import {getCurrentTrip} from "@/services/tripService";
+import {getCurrentTrip, updateTrip} from "@/services/tripService";
 import CustomDialogComponent from "@/components/dialog/CustomDialogComponent";
 import {useFocusEffect} from "@react-navigation/core";
+import {updateUser} from "@/services/userService";
 
 export default function CameraComponent() {
     const BASE_URL_AWS = "https://waystory.s3.eu-north-1.amazonaws.com/";
@@ -126,6 +127,14 @@ export default function CameraComponent() {
                 name,
                 country!
             );
+
+            await updateTrip({
+                ...currentTrip,
+                pictures: [
+                    ...currentTrip.pictures,
+                    BASE_URL_AWS + name
+                ]
+            });
         }
         await MediaLibrary.saveToLibraryAsync(photo.uri);
     };

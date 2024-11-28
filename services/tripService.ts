@@ -1,6 +1,6 @@
-import { db } from "@/config/firebase/firebaseConfig";
-import { getAuth } from "firebase/auth";
-import { collection, query, where, getDocs, addDoc, deleteDoc, doc } from "firebase/firestore";
+import {db} from "@/config/firebase/firebaseConfig";
+import {getAuth} from "firebase/auth";
+import {collection, query, where, getDocs, addDoc, deleteDoc, doc, updateDoc, and} from "firebase/firestore";
 
 const tripsCollectionRef = collection(db, "trips");
 
@@ -40,4 +40,19 @@ const deleteTrip = async (id: string) => {
     return;
 }
 
-export { getAllTrips, getTripById, createTrip, deleteTrip, getCurrentTrip };
+const updateTrip = async (trip: Trip) => {
+    try {
+        const auth = getAuth();
+        const tripCollectionQuery = query(tripsCollectionRef,
+            where("userId", "==", auth.currentUser?.uid),
+            where("currentTrip", "==", true));
+        const tripCollectionSnapshot = await getDocs(tripCollectionQuery);
+        const docId = tripCollectionSnapshot.docs[0].id;
+        const tripDocRef = doc(tripsCollectionRef, docId);
+        await updateDoc(tripDocRef, trip);
+    } catch (error) {
+        console.error("Erreur mise à jour de voyage:", error);
+    }
+}
+
+export {getAllTrips, getTripById, createTrip, deleteTrip, getCurrentTrip, updateTrip};

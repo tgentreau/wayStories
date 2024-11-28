@@ -56,11 +56,11 @@ export default function UserProfile() {
             </View>
             <View style={styles.userNameContainer}>
                 <View style={[styles.statContainer, styles.rightBorder]}>
-                    <Text>{countryCount}</Text>
+                    <Text style={styles.counter}>{countryCount}</Text>
                     <Text>Pays</Text>
                 </View>
                 <View style={styles.statContainer}>
-                    <Text>{waystoryCount}</Text>
+                    <Text style={styles.counter}>{waystoryCount}</Text>
                     <Text>Waystories</Text>
                 </View>
             </View>
@@ -112,6 +112,10 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         alignItems: 'center',
         padding: 10,
+    },
+    counter: {
+        fontSize: 20,
+        fontWeight: 'bold',
     },
     rightBorder: {
         borderRightWidth: 1,

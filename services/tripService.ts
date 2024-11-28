@@ -15,6 +15,9 @@ const getCurrentTrip = async () => {
     const auth = getAuth();
     const tripsCollectionQuery = query(tripsCollectionRef, where("userId", "==", auth.currentUser?.uid), where("currentTrip", "==", true));
     const tripsCollectionSnapshot = await getDocs(tripsCollectionQuery);
+    if (tripsCollectionSnapshot.empty) {
+        return null;
+    }
     return tripsCollectionSnapshot.docs[0].data() as Trip;
 }
 

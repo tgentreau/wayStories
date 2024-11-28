@@ -13,7 +13,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {Image} from 'expo-image';
 
 export default function EditUserProfileForm() {
-    const {control, handleSubmit, formState: {errors}} = useForm<CreateTripForm>();
+    const {handleSubmit} = useForm<CreateTripForm>();
     const [loading, setLoading] = useState(false);
     const [newUserProfile, setNewUserProfile] = useState<UserProfilEdited | null>(null);
     const [imageProfile, setImageProfile] = useState<ImagePickerSuccessResult | undefined>(undefined);

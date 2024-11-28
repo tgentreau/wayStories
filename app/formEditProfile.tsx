@@ -1,8 +1,7 @@
-import {Text, View} from "@/components/Themed";
+import {View} from "@/components/Themed";
 import {Platform, StyleSheet, TouchableOpacity} from "react-native";
 import {router} from "expo-router";
 import {Ionicons} from "@expo/vector-icons";
-import CreateWayStoryForm from "@/components/trips/CreateWayStoryForm";
 import {StatusBar} from "expo-status-bar";
 import EditUserProfileForm from "@/components/user/EditUserProfileForm";
 
@@ -14,14 +13,14 @@ export default function FormEditProfile() {
                 style={styles.backButton}
                 onPress={() => router.back()}
             >
-                <Ionicons name="arrow-back" size={24} color="black" />
+                <Ionicons name="arrow-back" size={24} color="black"/>
             </TouchableOpacity>
 
             <View style={styles.content}>
-                <EditUserProfileForm />
+                <EditUserProfileForm/>
             </View>
 
-            <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
+            <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'}/>
         </View>
     );
 }

@@ -30,7 +30,7 @@ export default function UserProfile() {
         if (userLogged) {
             const user = await getUserById(userLogged.uid);
             setUserName(user.username);
-            setWaystoryCount((await getAllTrips()).length + 1);
+            setWaystoryCount((await getAllTrips()).length);
             setBio(user.biographie ?? null);
             setProfilePictureLink(user.profilePictureLink ?? null);
         }

@@ -16,8 +16,10 @@ export type SignInFormInputs = {
     confirmPassword: string;
 };
 
-export type UserProfil = {
-    username: string;
-    profilePictureLink: string;
-    biographie: string;
+export type UserProfilEdited = {
+    profilePictureLink?: string;
+    username?: string;
+    email?: string;
+    password?: string;
+    biographie?: string;
 }

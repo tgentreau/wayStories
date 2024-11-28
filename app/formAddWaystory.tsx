@@ -5,7 +5,7 @@ import {Ionicons} from '@expo/vector-icons';
 import {Text, View} from '@/components/Themed';
 import CreateWayStoryForm from '@/components/trips/CreateWayStoryForm';
 
-export default function ModalScreen() {
+export default function ModalFormAddWaystory() {
   return (
     <View style={styles.container}>
       <TouchableOpacity 

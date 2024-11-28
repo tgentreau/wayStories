@@ -4,7 +4,7 @@ import { Text, View } from '@/components/Themed';
 import AllCurrentUserTrips from '@/components/trips/AllUserTrips';
 import CurrentUserTrip from '@/components/trips/CurrentUserTrip';
 import { Button } from '@rneui/base';
-import { Link, Router, useRouter } from 'expo-router';
+import { Router, useRouter } from 'expo-router';
 
 export default function TabOneScreen() {
 

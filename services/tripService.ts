@@ -1,4 +1,5 @@
 import { db } from "@/config/firebase/firebaseConfig";
+import { CreateTripData, Trip, TripFirestore } from "@/types/trip";
 import { getAuth } from "firebase/auth";
 import { collection, query, where, getDocs, addDoc, deleteDoc, doc } from "firebase/firestore";
 
@@ -15,7 +16,10 @@ const getCurrentTrip = async () => {
     const auth = getAuth();
     const tripsCollectionQuery = query(tripsCollectionRef, where("userId", "==", auth.currentUser?.uid), where("currentTrip", "==", true));
     const tripsCollectionSnapshot = await getDocs(tripsCollectionQuery);
-    return tripsCollectionSnapshot.docs[0].data() as Trip;
+    return {
+        id: tripsCollectionSnapshot.docs[0].id, 
+        data: tripsCollectionSnapshot.docs[0].data() as Trip
+    } as TripFirestore;
 }
 
 const getTripById = async (id: string) => {

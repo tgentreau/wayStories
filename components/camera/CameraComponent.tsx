@@ -1,4 +1,4 @@
-import {CameraType, CameraView, useCameraPermissions} from "expo-camera";
+import {CameraCapturedPicture, CameraPictureOptions, CameraType, CameraView, useCameraPermissions} from "expo-camera";
 import {useEffect, useRef, useState} from "react";
 import {Animated, Button, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
@@ -7,6 +7,8 @@ import * as MediaLibrary from 'expo-media-library';
 import {getAuth} from "firebase/auth";
 import {uploadFile} from "@/config/aws/uploadFile";
 import {createPicture} from "@/services/pictureService";
+import { getCurrentTrip } from "@/services/tripService";
+import { ImageManipulator, SaveFormat } from "expo-image-manipulator";
 
 
 export default function CameraComponent() {
@@ -65,7 +67,7 @@ export default function CameraComponent() {
 
     async function takePicture() {
         if (cameraRef.current) {
-            const pictureOptions = {
+            const pictureOptions: CameraPictureOptions = {
                 exif: true,
                 additionalExif: location ? {
                     GPSLatitude: location.coords.latitude,
@@ -74,9 +76,22 @@ export default function CameraComponent() {
                 } : undefined,
                 // base64: true,
             };
-            const photo = await cameraRef.current.takePictureAsync(pictureOptions);
+            const photo: CameraCapturedPicture | undefined = await cameraRef.current.takePictureAsync(pictureOptions);
             if (photo && !photo.base64 && photo.exif.GPSLongitude && photo.exif.GPSLatitude) {
-                await savePicture(photo);
+                const context = await ImageManipulator.manipulate(photo.uri);
+                const imageRef = await context.renderAsync();
+                const pngImage = await imageRef.saveAsync({
+                    format: SaveFormat.PNG,
+                });
+                const pngPhoto: CameraCapturedPicture = {
+                    ...pngImage,
+                    exif: photo.exif,
+                    width: photo.width,
+                    height: photo.height
+                };
+
+                imageRef.release();
+                await savePicture(pngPhoto);
             }
         }
     }
@@ -91,13 +106,14 @@ export default function CameraComponent() {
         const user = auth.currentUser!;
         await MediaLibrary.saveToLibraryAsync(photo.uri);
         const awsResponse = await uploadFile(photo);
+        const tripId: string = await getCurrentTrip().then((trip) => trip.id);
         await createPicture(
             user.uid,
             new Date().toISOString(),
             awsResponse,
             photo.exif.GPSLatitude,
             photo.exif.GPSLongitude,
-            'tripId',
+            tripId,
             getFileName(photo.uri)
         );
     };

@@ -14,6 +14,7 @@ export async function uploadFile(fileToUpload) {
         const segments = fileToUpload.uri.split('/');
         return segments[segments.length - 1];
     };
+
     const file = {
         uri: fileToUpload.uri,
         name: getFileNameFromUri(),

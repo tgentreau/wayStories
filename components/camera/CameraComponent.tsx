@@ -15,9 +15,10 @@ export default function CameraComponent() {
     const BASE_URL_AWS = "https://waystory.s3.eu-north-1.amazonaws.com/";
     const [facing, setFacing] = useState<CameraType>('back');
     const [permission, requestPermission] = useCameraPermissions();
-    const [location, setLocation] = useState<Location.LocationObject | null>(null);
+    const [, setLocation] = useState<Location.LocationObject | null>(null);
     const [currentTrip, setCurrentTrip] = useState<Trip | null>(null);
     const [isDialogVisible, setDialogVisible] = useState(true);
+    const [country, setCountry] = useState<string | null>(null);
     const cameraRef = useRef<CameraView>(null);
     const rotation = useRef(new Animated.Value(0)).current;
 
@@ -80,6 +81,13 @@ export default function CameraComponent() {
     async function takePicture() {
         if (cameraRef.current) {
             let location = await Location.getCurrentPositionAsync({});
+            let reverseGeocode = await Location.reverseGeocodeAsync({
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+            });
+            if (reverseGeocode.length > 0) {
+                setCountry(reverseGeocode[0].country);
+            }
             setLocation(location);
 
             const pictureOptions = {
@@ -115,7 +123,8 @@ export default function CameraComponent() {
                 photo.exif.GPSLatitude,
                 photo.exif.GPSLongitude,
                 'tripId',
-                name
+                name,
+                country!
             );
         }
         await MediaLibrary.saveToLibraryAsync(photo.uri);

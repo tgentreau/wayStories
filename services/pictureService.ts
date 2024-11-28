@@ -9,7 +9,16 @@ const getPictureById = async (id: string) =>  {
     return userCollectionSnapshot.docs[0].data();
 }
 
-const createPicture = async (userId: string, date: string, link: string, localisationX: string, localisationY: string, tripId: string, name: string) => {
+const createPicture = async (
+    userId: string,
+    date: string,
+    link: string,
+    localisationX: string,
+    localisationY: string,
+    tripId: string,
+    name: string,
+    country: string
+) => {
     try {
         await addDoc(picturesCollectionRef, {
             date,
@@ -18,7 +27,8 @@ const createPicture = async (userId: string, date: string, link: string, localis
             localisationY,
             name,
             tripId,
-            userId
+            userId,
+            country
         });
     } catch (error) {
         console.error("Erreur création de la photo:", error);

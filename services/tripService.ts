@@ -25,10 +25,25 @@ const getAllTripsFinished = async (): Promise<Trip[]> => {
 
 const getTripByName = async (name: string): Promise<Trip> => {
     const auth = getAuth();
-    const tripsCollectionQuery = query(tripsCollectionRef, where("name", "==", name), where("userId", "==", auth.currentUser?.uid));
+    const userId = auth.currentUser?.uid;
+    if (!userId) {
+        console.log("User not authenticated");
+        throw new Error("User not authenticated");
+    }
+
+    const tripsCollectionQuery = query(tripsCollectionRef, 
+        where("userId", "==", userId), 
+        where("name", "==", name)
+    );
     const tripsCollectionSnapshot = await getDocs(tripsCollectionQuery);
-    return tripsCollectionSnapshot.docs[0].data() as Trip;
-}
+    if (!tripsCollectionSnapshot.empty) {
+        const tripDoc = tripsCollectionSnapshot.docs[0];
+        return tripDoc.data() as Trip;
+    } else {
+        console.log("Trip not found");
+        throw new Error("Trip not found");
+    }
+};
 
 const getCurrentTrip = async (): Promise<TripFirestore> => {
     const auth = getAuth();

@@ -1,9 +1,8 @@
 import { Picture } from "@/types/picture";
 import { Trip } from "@/types/trip";
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Image, Animated } from "react-native";
+import { View, StyleSheet, Image, Animated, Button } from "react-native";
 import MapView, { Marker, Polyline } from "react-native-maps";
-import LoadingScreen from "../utils/LoadingScreen";
 
 interface TripsMapProps {
     trip: Trip;
@@ -11,15 +10,14 @@ interface TripsMapProps {
 }
 
 const TripsMap: React.FC<TripsMapProps> = ({ trip, pictures }) => {
-    const [loading, setLoading] = useState(true);
     const [visibleMarkers, setVisibleMarkers] = useState<number[]>([]);
     const [progress] = useState(new Animated.Value(0));
     const [currentProgress, setCurrentProgress] = useState(0);
-    
+
     useEffect(() => {
         if (pictures.length === 0) return;
 
-        const animationDuration = 1000;
+        const animationDuration = 1200;
         const totalDuration = pictures.length * animationDuration;
 
         setVisibleMarkers([]);
@@ -46,10 +44,9 @@ const TripsMap: React.FC<TripsMapProps> = ({ trip, pictures }) => {
         };
     }, [pictures.length]);
 
-
-    if (loading) {
-        return <LoadingScreen />;
-    }
+    const handleButtonPress = () => {
+        console.log("Button pressed!");
+    };
 
     return (
         <View style={styles.container}>
@@ -73,7 +70,7 @@ const TripsMap: React.FC<TripsMapProps> = ({ trip, pictures }) => {
                             title={picture.name}
                         >
                             <Image
-                                source={{uri: picture.link}}
+                                source={{ uri: picture.link }}
                                 style={styles.markerImage}
                             />
                         </Marker>
@@ -88,6 +85,9 @@ const TripsMap: React.FC<TripsMapProps> = ({ trip, pictures }) => {
                     strokeWidth={2}
                 />
             </MapView>
+            <View style={styles.buttonContainer}>
+                <Button title="Détail de la WayStory" onPress={handleButtonPress} disabled={!trip} />
+            </View>
         </View>
     );
 }
@@ -96,16 +96,24 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         width: '100%',
-        height: '100%'
+        height: '100%',
     },
     map: {
         width: '100%',
-        height: '100%'
+        height: '100%',
     },
     markerImage: {
         width: 100,
         height: 100,
-    }
+    },
+    buttonContainer: {
+        position: 'absolute',
+        bottom: 20,
+        left: '50%',
+        transform: [{ translateX: -100 }],
+        padding: 10,
+        borderRadius: 5,
+    },
 });
 
-export default TripsMap
+export default TripsMap;

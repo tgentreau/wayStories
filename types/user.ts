@@ -15,3 +15,9 @@ export type SignInFormInputs = {
     password: string;
     confirmPassword: string;
 };
+
+export type UserProfil = {
+    username: string;
+    profilePictureLink: string;
+    biographie: string;
+}

@@ -5,8 +5,7 @@ import AllCurrentUserTrips from '@/components/trips/AllUserTrips';
 import CurrentUserTrip from '@/components/trips/CurrentUserTrip';
 import {Button} from '@rneui/base';
 import {Router, useRouter} from 'expo-router';
-import {Image} from 'expo-image';
-import UserName from "@/components/user/userName";
+import UserProfile from "@/components/user/UserProfile";
 
 export default function TabOneScreen() {
 
@@ -18,7 +17,7 @@ export default function TabOneScreen() {
 
     return (
         <View style={styles.container}>
-            <UserName/>
+            <UserProfile/>
             <Button
                 title="Créer une nouvelle WayStory"
                 buttonStyle={{
@@ -47,7 +46,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-        justifyContent: 'center',
     },
     title: {
         fontSize: 20,

@@ -36,8 +36,8 @@ export default function TabLayout() {
                             <Pressable>
                                 {({pressed}) => (
                                     <FontAwesome
-                                        name="info-circle"
-                                        size={25}
+                                        name="gear"
+                                        size={30}
                                         color={Colors[colorScheme ?? 'light'].text}
                                         style={{marginRight: 15, opacity: pressed ? 0.5 : 1}}
                                     />

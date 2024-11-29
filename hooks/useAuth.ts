@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 
 export const useAuth = () => {
     const [user, setUser] = useState<User | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const segments: string[] = useSegments();
     const router: Router = useRouter();
 

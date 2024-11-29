@@ -1,20 +1,20 @@
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { UserLogin } from "@/types/user";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { Auth, getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { Router, useRouter } from "expo-router";
 import { View, StyleSheet} from "react-native";
 import { Button, Input } from "@rneui/themed";
 
 export default function LoginForm() {
     const { control, handleSubmit, formState: { errors } } = useForm<UserLogin>();
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState<boolean>(false);
     const router: Router = useRouter();
 
-    const onSubmit = async (data: UserLogin) => {
+    const onSubmit = async (data: UserLogin): Promise<void> => {
         try {
             setLoading(true);
-            const auth = getAuth();
+            const auth: Auth = getAuth();
             await signInWithEmailAndPassword(auth, data.email, data.password);
             router.replace('/(tabs)');
         } catch (error) {

@@ -13,14 +13,13 @@ export default function MapScreen() {
 
   const [trip, setTrip] = useState<Trip | null>(null);
   const [pictures, setPictures] = useState<Picture[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
+  const [loading, setLoading] = useState<boolean>(true);
+  const [search, setSearch] = useState<string>('');
 
   useEffect(() => {
     async function fetchData() {
       try {
         const tripData: TripFirestore = await getCurrentTrip();
-        console.log(tripData)
         if (tripData.data) {
           setTrip(tripData.data);
           const picturesSorted: Picture[] = await getAllPicturesByUserIdAndTripId(tripData.data.userId, tripData.id);

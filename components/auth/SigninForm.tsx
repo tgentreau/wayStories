@@ -2,7 +2,7 @@ import { createUser, getUserById } from "@/services/userService";
 import { SignInFormInputs } from "@/types/user";
 import { Button, Input } from "@rneui/themed";
 import { Router, useRouter } from "expo-router";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, Auth, UserCredential } from "firebase/auth";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { View, StyleSheet } from "react-native";
@@ -10,22 +10,22 @@ import { View, StyleSheet } from "react-native";
 export default function SigninForm() {
 
     const { control, handleSubmit, formState: { errors }, watch } = useForm<SignInFormInputs>()
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState<boolean>(false);
     const password: string = watch('password');
     const router: Router = useRouter();
 
-    const onSubmit = async (data: SignInFormInputs) => {
+    const onSubmit = async (data: SignInFormInputs): Promise<void> => {
         try {
             setLoading(true);
-            const auth = getAuth()
-            const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
+            const auth: Auth = getAuth()
+            const userCredential: UserCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
             await createUser(userCredential.user.uid, data.username);
             router.replace('/(tabs)');
         } catch (error) {
             console.error(error);
-          } finally {
+        } finally {
             setLoading(false);
-          }
+        }
     }
 
     return ( 

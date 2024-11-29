@@ -4,21 +4,22 @@ import {getAllTripsFinished} from '@/services/tripService';
 import LoadingScreen from '../utils/LoadingScreen';
 import {StyleSheet, View} from "react-native";
 import {Image} from "expo-image";
-import {TripDTO} from "@/types/trip";
+import {TripDTO, TripFirestore} from "@/types/trip";
 import {getAllPicturesByUserIdAndTripId} from "@/services/pictureService";
+import {Picture} from "@/types/picture";
 
 export default function AllUserTrips() {
 
     const [trips, setTrips] = useState<TripDTO[]>([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
-        async function fetchTrips() {
-            const tripsData = await getAllTripsFinished();
+        async function fetchTrips(): Promise<void> {
+            const tripsData: TripFirestore[] = await getAllTripsFinished();
 
             const tripsTest: TripDTO[] = [];
-            await Promise.all(tripsData.map(async (trip) => {
-                const pictures = await getAllPicturesByUserIdAndTripId(trip.data.userId, trip.id);
+            await Promise.all(tripsData.map(async (trip: TripFirestore) => {
+                const pictures: Picture[] = await getAllPicturesByUserIdAndTripId(trip.data.userId, trip.id);
                 tripsTest.push({
                     name: trip.data.name,
                     pictures: pictures ?? [],

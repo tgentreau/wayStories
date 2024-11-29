@@ -8,18 +8,19 @@ import { Image } from 'expo-image';
 import {Button} from "@rneui/base";
 import {TripDTO, TripFirestore} from "@/types/trip";
 import {getAllPicturesByUserIdAndTripId} from "@/services/pictureService";
+import { Picture } from "@/types/picture";
 
 export default function CurrentUserTrip() {
     const [trip, setTrip] = useState<TripDTO>();
-    const [loading, setLoading] = useState(true);
-    const [modalVisible, setModalVisible] = useState(false);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [modalVisible, setModalVisible] = useState<boolean>(false);
 
     useEffect(() => {
-        async function fetchTrip() {
+        async function fetchTrip(): Promise<void> {
             try {
                 const tripData: TripFirestore = await getCurrentTrip();
                 if (tripData.data) {
-                    const pictures = await getAllPicturesByUserIdAndTripId(tripData.data.userId, tripData.id);
+                    const pictures: Picture[] = await getAllPicturesByUserIdAndTripId(tripData.data.userId, tripData.id);
                     setTrip({
                         name: tripData.data.name,
                         pictures: pictures ?? [],

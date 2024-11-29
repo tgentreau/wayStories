@@ -32,6 +32,7 @@ const createUser = async (
 
 const updateUser = async (user: UserProfilEdited) => {
     try {
+        console.log('user :', user);
         const auth = getAuth();
         const userCollectionQuery = query(userCollectionRef, where("userId", "==", auth.currentUser?.uid));
         const userCollectionSnapshot = await getDocs(userCollectionQuery);

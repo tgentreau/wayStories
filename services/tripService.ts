@@ -16,11 +16,15 @@ const getAllTripsByUser = async (): Promise<AllTrips[]> => {
     return trips;
 }
 
-const getAllTripsFinished = async (): Promise<Trip[]> => {
+const getAllTripsFinished = async (): Promise<TripFirestore[]> => {
     const auth = getAuth();
     const tripsCollectionQuery = query(tripsCollectionRef, where("userId", "==", auth.currentUser?.uid), where("currentTrip", "==", false));
     const tripsCollectionSnapshot = await getDocs(tripsCollectionQuery);
-    return tripsCollectionSnapshot.docs.map(doc => doc.data()) as Trip[];
+    const trips: TripFirestore[] = []
+    for (const doc of tripsCollectionSnapshot.docs) {
+        trips.push({ id: doc.id, data: doc.data() as Trip });
+    }
+    return trips;
 }
 
 const getTripByName = async (name: string): Promise<TripFirestore> => {
@@ -89,4 +93,4 @@ const updateTrip = async (trip: Trip) => {
     }
 }
 
-export {getAllTrips, getAllTripsFinished, getTripById, createTrip, deleteTrip, getCurrentTrip, getAllTripsByUser, getTripByName, updateTrip };
+export {getAllTripsFinished, getTripById, createTrip, deleteTrip, getCurrentTrip, getAllTripsByUser, getTripByName, updateTrip };

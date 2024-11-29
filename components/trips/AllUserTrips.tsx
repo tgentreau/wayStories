@@ -1,9 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import {Text} from '@rneui/themed';
-import {getAllTrips} from '@/services/tripService';
+import {getAllTripsFinished} from '@/services/tripService';
 import LoadingScreen from '../utils/LoadingScreen';
 import {StyleSheet, View} from "react-native";
 import {Image} from "expo-image";
+import {TripDTO} from "@/types/trip";
+import {getAllPicturesByUserIdAndTripId} from "@/services/pictureService";
 
 export default function AllUserTrips() {
 
@@ -12,17 +14,40 @@ export default function AllUserTrips() {
 
     useEffect(() => {
         async function fetchTrips() {
-            const tripsData = await getAllTrips();
-            tripsData.forEach(trip => {
-                setTrips(
-                    [{
-                        name: trip.name,
-                        pictures: trip.pictures ?? [],
-                        startDate: trip.startDate,
-                        endDate: trip.endDate
-                    }]
-                )
-            });
+            const tripsData = await getAllTripsFinished();
+
+            const tripsTest: TripDTO[] = [];
+            await Promise.all(tripsData.map(async (trip) => {
+                const pictures = await getAllPicturesByUserIdAndTripId(trip.data.userId, trip.id);
+                tripsTest.push({
+                    name: trip.data.name,
+                    pictures: pictures ?? [],
+                    startDate: trip.data.startDate,
+                    endDate: trip.data.endDate
+                });
+                // setTrips(
+                //     [
+                //         ...trips,
+                //         {
+                //             name: trip.data.name,
+                //             pictures: pictures ?? [],
+                //             startDate: trip.data.startDate,
+                //             endDate: trip.data.endDate
+                //         }
+                //     ]
+                // );
+                // console.log('trips', [
+                //     ...trips,
+                //     {
+                //         name: trip.data.name,
+                //         pictures: pictures ?? [],
+                //         startDate: trip.data.startDate,
+                //         endDate: trip.data.endDate
+                //     }
+                // ]);
+            }));
+            setTrips(tripsTest);
+
             setLoading(false);
         }
 
@@ -30,7 +55,7 @@ export default function AllUserTrips() {
     }, []);
 
     if (loading) {
-        return <LoadingScreen />
+        return <LoadingScreen/>
     }
 
     return (
@@ -42,7 +67,7 @@ export default function AllUserTrips() {
                             trip.pictures[0] ?
                                 <Image
                                     style={styles.image}
-                                    source={{uri: trip.pictures[0]}}
+                                    source={{uri: trip.pictures[0].link}}
                                 />
                                 :
                                 null

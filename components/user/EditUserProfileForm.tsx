@@ -11,6 +11,7 @@ import {getUserById, updateUser} from "@/services/userService";
 import {router} from "expo-router";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {Image} from 'expo-image';
+import {CreateTripForm} from "@/types/trip";
 
 export default function EditUserProfileForm() {
     const {handleSubmit} = useForm<CreateTripForm>();
@@ -38,7 +39,7 @@ export default function EditUserProfileForm() {
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ['images'],
-            allowsEditing: true,
+            allowsEditing: false,
             aspect: [4, 3],
             quality: 1,
         });
@@ -61,14 +62,14 @@ export default function EditUserProfileForm() {
             const updatedUserProfile: UserProfilEdited = {
                 username: userName,
                 biographie: bio,
-                profilePictureLink: profilePictureLink
+                profilePictureLink: (profilePictureLink ? profilePictureLink : "")
             };
 
             await updateUser(updatedUserProfile);
             router.replace('/(tabs)');
 
         } catch (error) {
-            console.error(error);
+            console.error('Erreur pendant la validation du profile : ', error);
         } finally {
             setLoading(false);
         }

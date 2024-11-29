@@ -6,4 +6,5 @@ export type Picture = {
     link: string;
     tripId: string
     userId: string;
+    country?: string;
 }

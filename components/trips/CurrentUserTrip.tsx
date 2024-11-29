@@ -6,6 +6,8 @@ import { StyleSheet, TouchableOpacity, View, Modal } from 'react-native';
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Image } from 'expo-image';
 import {Button} from "@rneui/base";
+import {TripDTO, TripFirestore} from "@/types/trip";
+import {getAllPicturesByUserIdAndTripId} from "@/services/pictureService";
 
 export default function CurrentUserTrip() {
     const [trip, setTrip] = useState<TripDTO>();
@@ -15,12 +17,13 @@ export default function CurrentUserTrip() {
     useEffect(() => {
         async function fetchTrip() {
             try {
-                const tripData = await getCurrentTrip();
-                if (tripData) {
+                const tripData: TripFirestore = await getCurrentTrip();
+                if (tripData.data) {
+                    const pictures = await getAllPicturesByUserIdAndTripId(tripData.data.userId, tripData.id);
                     setTrip({
-                        name: tripData.name,
-                        pictures: tripData.pictures ?? [],
-                        startDate: tripData.startDate,
+                        name: tripData.data.name,
+                        pictures: pictures ?? [],
+                        startDate: tripData.data.startDate,
                         endDate: ''
                     });
                 }
@@ -52,7 +55,7 @@ export default function CurrentUserTrip() {
                                     {trip.pictures[0] ?
                                         <Image
                                             style={styles.image}
-                                            source={{ uri: trip.pictures[0] }}
+                                            source={{ uri: trip.pictures[0].link }}
                                         />
                                         :
                                         <FontAwesome name="photo" size={30} color="gray" />

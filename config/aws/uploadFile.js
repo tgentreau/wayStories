@@ -1,7 +1,6 @@
 import {RNS3} from 'react-native-aws3';
 
 export async function uploadFile(fileToUpload) {
-
     const options = {
         bucket: 'waystory',
         region: 'eu-north-1',
@@ -10,7 +9,6 @@ export async function uploadFile(fileToUpload) {
     };
 
     const getFileNameFromUri = () => {
-
         const segments = fileToUpload.uri.split('/');
         return segments[segments.length - 1];
     };
@@ -18,7 +16,7 @@ export async function uploadFile(fileToUpload) {
     const file = {
         uri: fileToUpload.uri,
         name: getFileNameFromUri(),
-        type: fileToUpload.type || 'image/png',
+        type: 'image/png',
     };
 
     return RNS3

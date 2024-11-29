@@ -1,4 +1,4 @@
-import {CameraType, CameraView, useCameraPermissions} from "expo-camera";
+import {CameraCapturedPicture, CameraType, CameraView, useCameraPermissions} from "expo-camera";
 import {useCallback, useEffect, useRef, useState} from "react";
 import {Animated, Button, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
@@ -10,7 +10,8 @@ import {createPicture} from "@/services/pictureService";
 import {getCurrentTrip, updateTrip} from "@/services/tripService";
 import CustomDialogComponent from "@/components/dialog/CustomDialogComponent";
 import {useFocusEffect} from "@react-navigation/core";
-import {updateUser} from "@/services/userService";
+import {Trip, TripFirestore} from "@/types/trip";
+import {Picture} from "@/types/picture";
 
 export default function CameraComponent() {
     const BASE_URL_AWS = "https://waystory.s3.eu-north-1.amazonaws.com/";
@@ -26,9 +27,9 @@ export default function CameraComponent() {
     useFocusEffect(
         useCallback(() => {
             (async () => {
-                const trip = await getCurrentTrip();
-                setCurrentTrip(trip);
-                if (!trip) {
+                const tripData: TripFirestore = await getCurrentTrip();
+                setCurrentTrip(tripData.data);
+                if (!tripData.data) {
                     setDialogVisible(true);
                 }
             })();
@@ -111,14 +112,14 @@ export default function CameraComponent() {
         return segments[segments.length - 1];
     };
 
-    const savePicture = async (photo: any) => {
+    const savePicture = async (photo: CameraCapturedPicture) => {
         if (currentTrip) {
             const auth = getAuth();
             const user = auth.currentUser!;
             await uploadFile(photo);
-        const tripId: string = await getCurrentTrip().then((trip) => trip.id);
+            const tripId: string = await getCurrentTrip().then((trip) => trip.id);
             const name = getFileName(photo.uri)
-            await createPicture(
+            const picture: Picture = await createPicture(
                 user.uid,
                 photo.exif.DateTimeOriginal,
                 BASE_URL_AWS + name,
@@ -132,8 +133,8 @@ export default function CameraComponent() {
             await updateTrip({
                 ...currentTrip,
                 pictures: [
-                    ...currentTrip.pictures,
-                    BASE_URL_AWS + name
+                    ...(currentTrip.pictures || []),
+                    picture
                 ]
             });
         }

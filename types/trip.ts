@@ -35,9 +35,9 @@ export type CreateTripData = {
     currentTrip: boolean
 }
 
-type TripDTO = {
+export type TripDTO = {
     name: string
     startDate: string
     endDate: string
-    pictures: string[]
+    pictures: Picture[]
 }

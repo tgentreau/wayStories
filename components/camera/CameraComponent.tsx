@@ -116,6 +116,7 @@ export default function CameraComponent() {
             const auth = getAuth();
             const user = auth.currentUser!;
             await uploadFile(photo);
+        const tripId: string = await getCurrentTrip().then((trip) => trip.id);
             const name = getFileName(photo.uri)
             await createPicture(
                 user.uid,
@@ -123,7 +124,7 @@ export default function CameraComponent() {
                 BASE_URL_AWS + name,
                 photo.exif.GPSLatitude,
                 photo.exif.GPSLongitude,
-                'tripId',
+                tripId,
                 name,
                 country!
             );

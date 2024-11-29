@@ -9,6 +9,13 @@ const getPictureById = async (id: string) =>  {
     return userCollectionSnapshot.docs[0].data();
 }
 
+const getAllPicturesByUserIdAndTripId = async (userId: string, tripId: string) => {
+    const userCollectionQuery = query(picturesCollectionRef, where("userId", "==", userId), where("tripId", "==", tripId));
+    const userCollectionSnapshot = await getDocs(userCollectionQuery);
+    const picturesUnsorted: Picture[] = userCollectionSnapshot.docs.map(doc => doc.data()) as Picture[];
+    return picturesUnsorted.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+}
+
 const createPicture = async (
     userId: string,
     date: string,
@@ -35,6 +42,4 @@ const createPicture = async (
     }
 }
 
-
-
-export { getPictureById, createPicture };
+export { getPictureById, createPicture, getAllPicturesByUserIdAndTripId };

@@ -7,6 +7,7 @@ import {Controller, useForm} from 'react-hook-form';
 import {Platform, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import DateTimePicker, {DateTimePickerEvent} from '@react-native-community/datetimepicker';
 import dayjs from "dayjs";
+import { CreateTripData, CreateTripForm } from '@/types/trip';
 
 export default function CreateWayStoryForm() {
     const {control, handleSubmit, formState: {errors}} = useForm<CreateTripForm>();
@@ -94,8 +95,6 @@ export default function CreateWayStoryForm() {
                         autoCapitalize="none"
                         onChangeText={onChange}
                         value={value}
-                        errorMessage={errors.name?.message}
-                        leftIcon={{type: 'font-awesome', name: 'pencil'}}
                     />
                 )}
             />
@@ -109,8 +108,6 @@ export default function CreateWayStoryForm() {
                         autoCapitalize="none"
                         onChangeText={onChange}
                         value={value}
-                        errorMessage={errors.name?.message}
-                        leftIcon={{type: 'font-awesome', name: 'align-left'}}
                     />
                 )}
             />

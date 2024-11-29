@@ -20,6 +20,7 @@ export default function MapScreen() {
     async function fetchData() {
       try {
         const tripData: TripFirestore = await getCurrentTrip();
+        console.log(tripData)
         if (tripData.data) {
           setTrip(tripData.data);
           const picturesSorted: Picture[] = await getAllPicturesByUserIdAndTripId(tripData.data.userId, tripData.id);
@@ -37,9 +38,9 @@ export default function MapScreen() {
   const handleSearch = async () => {
     setLoading(true);
     try {
-      const tripData: Trip = await getTripByName(search);
-      setTrip(tripData);
-      const picturesSorted: Picture[] = await getAllPicturesByUserIdAndTripId(tripData.userId, tripData.id);
+      const tripData: TripFirestore = await getTripByName(search);
+      setTrip(tripData.data);
+      const picturesSorted: Picture[] = await getAllPicturesByUserIdAndTripId(tripData.data.userId, tripData.id);
       setPictures(picturesSorted);
     } catch (error) {
       console.error("Error fetching trip by name: ", error);

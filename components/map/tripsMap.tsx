@@ -1,7 +1,8 @@
 import { Picture } from "@/types/picture";
 import { Trip } from "@/types/trip";
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Image, Animated, Button } from "react-native";
+import { View, StyleSheet, Image, Animated } from "react-native";
+import { Button } from "@rneui/themed";
 import MapView, { Marker, Polyline } from "react-native-maps";
 
 interface TripsMapProps {
@@ -67,7 +68,6 @@ const TripsMap: React.FC<TripsMapProps> = ({ trip, pictures }) => {
                                 latitude: picture.localisationX,
                                 longitude: picture.localisationY,
                             }}
-                            title={picture.name}
                         >
                             <Image
                                 source={{ uri: picture.link }}
@@ -103,8 +103,9 @@ const styles = StyleSheet.create({
         height: '100%',
     },
     markerImage: {
-        width: 100,
-        height: 100,
+        width: 50,
+        height: 50,
+        borderRadius: 25,
     },
     buttonContainer: {
         position: 'absolute',

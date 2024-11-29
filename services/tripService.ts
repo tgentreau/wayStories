@@ -23,7 +23,7 @@ const getAllTripsFinished = async (): Promise<Trip[]> => {
     return tripsCollectionSnapshot.docs.map(doc => doc.data()) as Trip[];
 }
 
-const getTripByName = async (name: string): Promise<Trip> => {
+const getTripByName = async (name: string): Promise<TripFirestore> => {
     const auth = getAuth();
     const userId = auth.currentUser?.uid;
     if (!userId) {
@@ -33,12 +33,16 @@ const getTripByName = async (name: string): Promise<Trip> => {
 
     const tripsCollectionQuery = query(tripsCollectionRef, 
         where("userId", "==", userId), 
-        where("name", "==", name)
+        where("name", "==", name.trim())
     );
     const tripsCollectionSnapshot = await getDocs(tripsCollectionQuery);
     if (!tripsCollectionSnapshot.empty) {
         const tripDoc = tripsCollectionSnapshot.docs[0];
-        return tripDoc.data() as Trip;
+        console.log(tripDoc.data());
+        return {
+            id: tripsCollectionSnapshot.docs[0].id, 
+            data: tripsCollectionSnapshot.docs[0].data() as Trip
+        };
     } else {
         console.log("Trip not found");
         throw new Error("Trip not found");

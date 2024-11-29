@@ -1,14 +1,16 @@
-import {useEffect, useState} from "react";
-import {getCurrentTrip} from "@/services/tripService";
+import { useEffect, useState } from "react";
+import { getCurrentTrip } from "@/services/tripService";
 import LoadingScreen from "../utils/LoadingScreen";
-import {Text} from '@rneui/themed';
-import {StyleSheet, View} from 'react-native';
+import { Text } from '@rneui/themed';
+import { StyleSheet, TouchableOpacity, View, Modal } from 'react-native';
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import {Image} from 'expo-image';
+import { Image } from 'expo-image';
+import {Button} from "@rneui/base";
 
 export default function CurrentUserTrip() {
     const [trip, setTrip] = useState<TripDTO>();
     const [loading, setLoading] = useState(true);
+    const [modalVisible, setModalVisible] = useState(false);
 
     useEffect(() => {
         async function fetchTrip() {
@@ -20,7 +22,7 @@ export default function CurrentUserTrip() {
                         pictures: tripData.pictures ?? [],
                         startDate: tripData.startDate,
                         endDate: ''
-                    })
+                    });
                 }
                 setLoading(false);
             } catch (error) {
@@ -33,40 +35,57 @@ export default function CurrentUserTrip() {
     }, []);
 
     if (loading) {
-        return <LoadingScreen/>
+        return <LoadingScreen />;
     }
 
     return (
-        <View style={styles.container}>
-            {!trip ?
-                <Text style={styles.tripName}>Pas de WayStory en cours</Text>
-                :
-                <View style={styles.tripContainer}>
-                    <Text style={styles.tripName}>{trip.name ?? 'name'}</Text>
-                    <View style={styles.imageContainer}>
-                        <View style={styles.roundContainer}>
-                            <View style={styles.roundImageContainer}>
-                                {trip.pictures[0] ?
-                                    <Image
-                                        style={styles.image}
-                                        source={{uri: trip.pictures[0]}}
-                                    />
-                                    :
-                                    <FontAwesome name="photo" size={30} color="gray"/>
-                                }
+        <>
+            <TouchableOpacity style={styles.container} onPress={() => setModalVisible(true)}>
+                {!trip ?
+                    <Text style={styles.tripName}>Pas de WayStory en cours</Text>
+                    :
+                    <View style={styles.tripContainer}>
+                        <Text style={styles.tripName}>{trip.name ?? 'name'}</Text>
+                        <View style={styles.imageContainer}>
+                            <View style={styles.roundContainer}>
+                                <View style={styles.roundImageContainer}>
+                                    {trip.pictures[0] ?
+                                        <Image
+                                            style={styles.image}
+                                            source={{ uri: trip.pictures[0] }}
+                                        />
+                                        :
+                                        <FontAwesome name="photo" size={30} color="gray" />
+                                    }
+                                </View>
+                            </View>
+                            <View style={styles.linkRound}>
+                            </View>
+                            <View style={styles.smallRoundContainer}>
+                                <View style={styles.smallRound} />
                             </View>
                         </View>
-                        <View style={styles.linkRound}>
-                        </View>
-                        <View style={styles.smallRoundContainer}>
-                            <View style={styles.smallRound}/>
-                        </View>
+                        <Text
+                            style={styles.tripDate}>{trip.startDate} - {trip.endDate !== '' ? trip.endDate : 'En cours'}</Text>
                     </View>
-                    <Text style={styles.tripDate}>{trip.startDate} - {trip.endDate !== '' ? trip.endDate : 'En cours'}</Text>
+                }
+            </TouchableOpacity>
+
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => setModalVisible(false)}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalText}>Trip Details</Text>
+                        <Button title="Close" onPress={() => setModalVisible(false)} />
+                    </View>
                 </View>
-            }
-        </View>
-    )
+            </Modal>
+        </>
+    );
 }
 
 const styles = StyleSheet.create({
@@ -136,4 +155,21 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         backgroundColor: 'black',
     },
-})
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContent: {
+        width: 300,
+        padding: 20,
+        backgroundColor: 'white',
+        borderRadius: 10,
+        alignItems: 'center',
+    },
+    modalText: {
+        fontSize: 20,
+        marginBottom: 20,
+    },
+});

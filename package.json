@@ -28,6 +28,7 @@
     "expo-linking": "~7.0.3",
     "expo-location": "^18.0.2",
     "expo-media-library": "^17.0.3",
+    "expo-modal": "^1.0.9",
     "expo-router": "~4.0.9",
     "expo-splash-screen": "~0.29.13",
     "expo-status-bar": "~2.0.0",

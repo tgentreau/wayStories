@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getCurrentTrip } from "@/services/tripService";
 import LoadingScreen from "../utils/LoadingScreen";
 import { View, Text } from '../Themed';
+import { Trip, TripFirestore } from "@/types/trip";
 
 export default function CurrentUserTrip() {
     const [trip, setTrip] = useState<Trip>();
@@ -10,8 +11,8 @@ export default function CurrentUserTrip() {
     useEffect(() => {
         async function fetchTrip() {
             try {
-                const tripData: Trip = await getCurrentTrip();
-                setTrip(tripData);
+                const tripData: TripFirestore = await getCurrentTrip();
+                setTrip(tripData.data);
                 setLoading(false);
             } catch (error) {
                 console.error(error);

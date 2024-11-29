@@ -1,20 +1,32 @@
-type Trip = {
+import { Picture } from "./picture"
+
+export type Trip = {
     id: string
     name: string
     startDate: string
     endDate: string
     userId: string
     resume: string
-    pictures: string[]
+    pictures: Picture[]
     currentTrip: boolean
 }
 
-type CreateTripForm = {
+export type TripFirestore = {
+    id: string
+    data: Trip
+}
+
+export type AllTrips = {
+    id: string
+    data: Trip[]
+}
+
+export type CreateTripForm = {
     name: string
     resume: string
 }
 
-type CreateTripData = {
+export type CreateTripData = {
     name: string
     startDate: string
     endDate: string | null

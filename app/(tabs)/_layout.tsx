@@ -36,7 +36,7 @@ export default function TabLayout() {
                             <Pressable>
                                 {({pressed}) => (
                                     <FontAwesome
-                                        name="info-circle"
+                                        name="gear"
                                         size={25}
                                         color={Colors[colorScheme ?? 'light'].text}
                                         style={{marginRight: 15, opacity: pressed ? 0.5 : 1}}
@@ -48,14 +48,6 @@ export default function TabLayout() {
                 }}
             />
             <Tabs.Screen
-                name="map"
-                options={{
-                    title: 'Carte',
-                    tabBarIcon: ({color}) => <TabBarIcon name="map" color={color}/>,
-                    headerShown: false
-                }}
-            />
-            <Tabs.Screen
                 name="camera"
                 options={{
                     title: '',
@@ -64,17 +56,10 @@ export default function TabLayout() {
                 }}
             />
             <Tabs.Screen
-                name="friends"
+                name="map"
                 options={{
-                    title: 'Amis',
-                    tabBarIcon: ({color}) => <TabBarIcon name="users" color={color}/>,
-                }}
-            />
-            <Tabs.Screen
-                name="trend"
-                options={{
-                    title: 'Tendance',
-                    tabBarIcon: ({color}) => <TabBarIcon name="fire" color={color}/>,
+                    title: 'Carte',
+                    tabBarIcon: ({color}) => <TabBarIcon name="map" color={color}/>,
                 }}
             />
         </Tabs>

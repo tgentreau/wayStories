@@ -1,4 +1,4 @@
-import {CameraType, CameraView, useCameraPermissions} from "expo-camera";
+import {CameraCapturedPicture, CameraPictureOptions, CameraType, CameraView, useCameraPermissions} from "expo-camera";
 import {useCallback, useEffect, useRef, useState} from "react";
 import {Animated, Button, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
@@ -7,16 +7,19 @@ import * as MediaLibrary from 'expo-media-library';
 import {getAuth} from "firebase/auth";
 import {uploadFile} from "@/config/aws/uploadFile";
 import {createPicture} from "@/services/pictureService";
-import {getCurrentTrip} from "@/services/tripService";
-import CustomDialogComponent from "@/components/dialog/CustomDialogComponent";
-import {useFocusEffect} from "@react-navigation/core";
+import { TripFirestore } from "@/types/trip";
+import { useFocusEffect } from "expo-router";
+import { getCurrentTrip } from "@/services/tripService";
+import CustomDialogComponent from "../dialog/CustomDialogComponent";
+import { ImageManipulator, SaveFormat } from "expo-image-manipulator";
+
 
 export default function CameraComponent() {
     const BASE_URL_AWS = "https://waystory.s3.eu-north-1.amazonaws.com/";
     const [facing, setFacing] = useState<CameraType>('back');
     const [permission, requestPermission] = useCameraPermissions();
     const [location, setLocation] = useState<Location.LocationObject | null>(null);
-    const [currentTrip, setCurrentTrip] = useState<Trip | null>(null);
+    const [currentTrip, setCurrentTrip] = useState<TripFirestore | null>(null);
     const [isDialogVisible, setDialogVisible] = useState(true);
     const cameraRef = useRef<CameraView>(null);
     const rotation = useRef(new Animated.Value(0)).current;
@@ -90,9 +93,22 @@ export default function CameraComponent() {
                     GPSAltitude: location.coords.altitude,
                 } : undefined
             };
-            const photo = await cameraRef.current.takePictureAsync(pictureOptions);
-            if (photo && photo.exif.GPSLongitude && photo.exif.GPSLatitude) {
-                await savePicture(photo);
+            const photo: CameraCapturedPicture | undefined = await cameraRef.current.takePictureAsync(pictureOptions);
+            if (photo && !photo.base64 && photo.exif.GPSLongitude && photo.exif.GPSLatitude) {
+                const context = await ImageManipulator.manipulate(photo.uri);
+                const imageRef = await context.renderAsync();
+                const pngImage = await imageRef.saveAsync({
+                    format: SaveFormat.PNG,
+                });
+                const pngPhoto: CameraCapturedPicture = {
+                    ...pngImage,
+                    exif: photo.exif,
+                    width: photo.width,
+                    height: photo.height
+                };
+
+                imageRef.release();
+                await savePicture(pngPhoto);
             }
         }
     }
@@ -107,6 +123,7 @@ export default function CameraComponent() {
             const auth = getAuth();
             const user = auth.currentUser!;
             await uploadFile(photo);
+        const tripId: string = await getCurrentTrip().then((trip) => trip.id);
             const name = getFileName(photo.uri)
             await createPicture(
                 user.uid,
@@ -114,7 +131,7 @@ export default function CameraComponent() {
                 BASE_URL_AWS + name,
                 photo.exif.GPSLatitude,
                 photo.exif.GPSLongitude,
-                'tripId',
+                tripId,
                 name
             );
         }

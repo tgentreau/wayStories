@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text } from '../Themed';
-import { getAllTrips } from '@/services/tripService';
+import { getAllTripsFinished } from '@/services/tripService';
 import LoadingScreen from '../utils/LoadingScreen';
+import { Trip } from '@/types/trip';
 
 export default function AllUserTrips() {
 
@@ -10,7 +11,7 @@ export default function AllUserTrips() {
 
     useEffect(() => {
         async function fetchTrips() {
-            const tripsData = await getAllTrips();
+            const tripsData = await getAllTripsFinished();
             setTrips(tripsData);
             setLoading(false);
         }

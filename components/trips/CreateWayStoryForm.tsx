@@ -4,7 +4,7 @@ import {Router, useRouter} from 'expo-router';
 import {getAuth} from 'firebase/auth';
 import {useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
-import {StyleSheet, Text, View} from 'react-native';
+import {Platform, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import DateTimePicker, {DateTimePickerEvent} from '@react-native-community/datetimepicker';
 import dayjs from "dayjs";
 
@@ -12,6 +12,7 @@ export default function CreateWayStoryForm() {
     const {control, handleSubmit, formState: {errors}} = useForm<CreateTripForm>();
     const [loading, setLoading] = useState(false);
     const [startDate, setStartDate] = useState<string>();
+    const [showDatePicker, setShowDatePicker] = useState(false);
     const date = new Date();
     const router: Router = useRouter();
 
@@ -40,21 +41,45 @@ export default function CreateWayStoryForm() {
     }
 
     const onChangeStartDate = (event: DateTimePickerEvent, selectedDate: Date | undefined) => {
-        setStartDate(dayjs(selectedDate).format('DD/MM/YYYY'));
+        setShowDatePicker(false);
+        if (selectedDate) {
+            setStartDate(dayjs(selectedDate).format('DD/MM/YYYY'));
+        }
     };
 
     return (
         <View style={styles.container}>
             <View style={styles.dateContainer}>
-                <Text style={styles.textDate}>
-                    Date de début
-                </Text>
-                <DateTimePicker
-                    testID="dateTimePicker"
-                    value={date}
-                    mode="date"
-                    onChange={onChangeStartDate}
-                />
+                {
+                    Platform.OS === 'ios' && (
+                        <DateTimePicker
+                            testID="dateTimePicker"
+                            value={date}
+                            mode="date"
+                            onChange={onChangeStartDate}
+                        />
+                    )
+                }
+                {
+                    Platform.OS === 'android' && (
+                        <>
+                            <Text style={styles.textDate}>
+                                Date de début
+                            </Text>
+                            <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+                                <Text style={styles.dateText}>{startDate ?? 'Sélectionner une date'}</Text>
+                            </TouchableOpacity>
+                            {showDatePicker && (
+                                <DateTimePicker
+                                    testID="dateTimePicker"
+                                    value={date}
+                                    mode="date"
+                                    onChange={onChangeStartDate}
+                                />
+                            )}
+                        </>
+                    )
+                }
             </View>
             <Controller
                 control={control}
@@ -127,5 +152,10 @@ const styles = StyleSheet.create({
         marginStart: 10,
         fontSize: 20,
         fontWeight: '300',
-    }
+    },
+    dateText: {
+        fontSize: 18,
+        color: 'blue',
+        marginStart: 10,
+    },
 });

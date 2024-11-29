@@ -119,7 +119,7 @@ export default function CameraComponent() {
             const name = getFileName(photo.uri)
             await createPicture(
                 user.uid,
-                photo.exif.DateTimeOriginal.split(' ')[0],
+                photo.exif.DateTimeOriginal,
                 BASE_URL_AWS + name,
                 photo.exif.GPSLatitude,
                 photo.exif.GPSLongitude,

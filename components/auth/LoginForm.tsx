@@ -18,7 +18,7 @@ export default function LoginForm() {
             await signInWithEmailAndPassword(auth, data.email, data.password);
             router.replace('/(tabs)');
         } catch (error) {
-            console.error(error);
+            console.error('Login form error : ', error);
         } finally {
             setLoading(false);
         }

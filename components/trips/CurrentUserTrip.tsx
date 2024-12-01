@@ -18,8 +18,8 @@ export default function CurrentUserTrip() {
     useEffect(() => {
         async function fetchTrip(): Promise<void> {
             try {
-                const tripData: TripFirestore = await getCurrentTrip();
-                if (tripData.data) {
+                const tripData: TripFirestore | null = await getCurrentTrip();
+                if (tripData && tripData.data.userId && tripData.id) {
                     const pictures: Picture[] = await getAllPicturesByUserIdAndTripId(tripData.data.userId, tripData.id);
                     setTrip({
                         name: tripData.data.name,

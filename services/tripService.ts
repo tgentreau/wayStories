@@ -1,7 +1,20 @@
-import { db } from "@/config/firebase/firebaseConfig";
-import { AllTrips, CreateTripData, Trip, TripFirestore } from "@/types/trip";
-import { Auth, getAuth } from "firebase/auth";
-import { collection, query, where, getDocs, addDoc, deleteDoc, doc, updateDoc, and, Query, DocumentData, QuerySnapshot, DocumentReference } from "firebase/firestore";
+import {db} from "@/config/firebase/firebaseConfig";
+import {AllTrips, CreateTripData, Trip, TripFirestore} from "@/types/trip";
+import {Auth, getAuth} from "firebase/auth";
+import {
+    addDoc,
+    collection,
+    deleteDoc,
+    doc,
+    DocumentData,
+    DocumentReference,
+    getDocs,
+    query,
+    Query,
+    QuerySnapshot,
+    updateDoc,
+    where
+} from "firebase/firestore";
 
 const tripsCollectionRef = collection(db, "trips");
 
@@ -51,14 +64,17 @@ const getTripByName = async (name: string): Promise<TripFirestore> => {
     }
 };
 
-const getCurrentTrip = async (): Promise<TripFirestore> => {
+const getCurrentTrip = async (): Promise<TripFirestore | null> => {
     const auth: Auth = getAuth();
-    const tripsCollectionQuery: Query<DocumentData, DocumentData> = query(tripsCollectionRef, where("userId", "==", auth.currentUser?.uid), where("currentTrip", "==", true));
-    const tripsCollectionSnapshot: QuerySnapshot<DocumentData, DocumentData> = await getDocs(tripsCollectionQuery);
-    return {
-        id: tripsCollectionSnapshot.docs[0].id,
-        data: tripsCollectionSnapshot.docs[0].data() as Trip
-    };
+    if (auth.currentUser) {
+        const tripsCollectionQuery: Query<DocumentData, DocumentData> = query(tripsCollectionRef, where("userId", "==", auth.currentUser?.uid), where("currentTrip", "==", true));
+        const tripsCollectionSnapshot: QuerySnapshot<DocumentData, DocumentData> = await getDocs(tripsCollectionQuery);
+        return {
+            id: tripsCollectionSnapshot.docs[0].id,
+            data: tripsCollectionSnapshot.docs[0].data() as Trip
+        };
+    }
+    return null;
 }
 
 const getTripById = async (id: string): Promise<Trip> => {

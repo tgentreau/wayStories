@@ -1,11 +1,11 @@
-import { createUser, getUserById } from "@/services/userService";
-import { SignInFormInputs } from "@/types/user";
-import { Button, Input } from "@rneui/themed";
-import { Router, useRouter } from "expo-router";
-import { getAuth, createUserWithEmailAndPassword, Auth, UserCredential } from "firebase/auth";
-import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { View, StyleSheet } from "react-native";
+import {createUser} from "@/services/userService";
+import {SignInFormInputs} from "@/types/user";
+import {Button, Input} from "@rneui/themed";
+import {Router, useRouter} from "expo-router";
+import {Auth, createUserWithEmailAndPassword, getAuth, UserCredential} from "firebase/auth";
+import {useState} from "react";
+import {Controller, useForm} from "react-hook-form";
+import {StyleSheet, View} from "react-native";
 
 export default function SigninForm() {
 
@@ -22,7 +22,7 @@ export default function SigninForm() {
             await createUser(userCredential.user.uid, data.username);
             router.replace('/(tabs)');
         } catch (error) {
-            console.error(error);
+            console.error('Sign in form error : ', error);
         } finally {
             setLoading(false);
         }

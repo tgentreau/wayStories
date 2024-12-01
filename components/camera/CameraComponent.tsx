@@ -27,10 +27,12 @@ export default function CameraComponent() {
     useFocusEffect(
         useCallback(() => {
             (async () => {
-                const tripData: TripFirestore = await getCurrentTrip();
-                setCurrentTrip(tripData.data);
-                if (!tripData.data) {
-                    setDialogVisible(true);
+                const tripData: TripFirestore | null = await getCurrentTrip();
+                if (tripData) {
+                    setCurrentTrip(tripData.data);
+                    if (!tripData.data) {
+                        setDialogVisible(true);
+                    }
                 }
             })();
         }, [])
@@ -117,7 +119,7 @@ export default function CameraComponent() {
             const auth: Auth = getAuth();
             const user: User = auth.currentUser!;
             await uploadFile(photo);
-            const tripId: string = await getCurrentTrip().then((trip) => trip.id);
+            const tripId: string = await getCurrentTrip().then((trip) => trip ? trip.id : "");
             const name: string = getFileName(photo.uri)
             const picture: Picture = await createPicture(
                 user.uid,

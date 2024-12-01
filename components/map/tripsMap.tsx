@@ -13,24 +13,24 @@ interface TripsMapProps {
 const TripsMap: React.FC<TripsMapProps> = ({ trip, pictures }) => {
     const [visibleMarkers, setVisibleMarkers] = useState<number[]>([]);
     const [progress] = useState(new Animated.Value(0));
-    const [currentProgress, setCurrentProgress] = useState(0);
+    const [currentProgress, setCurrentProgress] = useState<number>(0);
 
     useEffect(() => {
         if (pictures.length === 0) return;
 
-        const animationDuration = 1200;
-        const totalDuration = pictures.length * animationDuration;
+        const animationDuration: number = 1200;
+        const totalDuration: number = pictures.length * animationDuration;
 
         setVisibleMarkers([]);
         progress.setValue(0);
 
-        const pathAnimation = Animated.timing(progress, {
+        const pathAnimation: Animated.CompositeAnimation = Animated.timing(progress, {
             toValue: 1,
             duration: totalDuration,
             useNativeDriver: false
         });
 
-        const listener = progress.addListener(({ value }) => {
+        const listener: string = progress.addListener(({ value }) => {
             setCurrentProgress(value);
             const markersToShow = Math.ceil(value * pictures.length);
             setVisibleMarkers(Array.from({ length: markersToShow }, (_, i) => i));
@@ -44,10 +44,6 @@ const TripsMap: React.FC<TripsMapProps> = ({ trip, pictures }) => {
             progress.setValue(0);
         };
     }, [pictures.length]);
-
-    const handleButtonPress = () => {
-        console.log("Button pressed!");
-    };
 
     return (
         <View style={styles.container}>
@@ -86,7 +82,7 @@ const TripsMap: React.FC<TripsMapProps> = ({ trip, pictures }) => {
                 />
             </MapView>
             <View style={styles.buttonContainer}>
-                <Button title="Détail de la WayStory" onPress={handleButtonPress} disabled={!trip} />
+                <Button title="Détail de la WayStory" disabled={!trip} />
             </View>
         </View>
     );

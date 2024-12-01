@@ -1,32 +1,29 @@
 import {createTrip} from '@/services/tripService';
 import {Button, Input} from '@rneui/themed';
 import {Router, useRouter} from 'expo-router';
-import {getAuth} from 'firebase/auth';
+import {Auth, getAuth} from 'firebase/auth';
 import {useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
 import {Platform, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import DateTimePicker, {DateTimePickerEvent} from '@react-native-community/datetimepicker';
 import dayjs from "dayjs";
-import { CreateTripData, CreateTripForm } from '@/types/trip';
+import {CreateTripData, CreateTripForm} from '@/types/trip';
 
 export default function CreateWayStoryForm() {
-    const {control, handleSubmit, formState: {errors}} = useForm<CreateTripForm>();
-    const [loading, setLoading] = useState(false);
-    const [startDate, setStartDate] = useState<string>();
-    const [showDatePicker, setShowDatePicker] = useState(false);
-    const date = new Date();
+    const {control, handleSubmit} = useForm<CreateTripForm>();
+    const [loading, setLoading] = useState<boolean>(false);
+    const [startDate, setStartDate] = useState<Date>(new Date());
+    const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
     const router: Router = useRouter();
 
-    const onSubmit = async (data: CreateTripForm) => {
+    const onSubmit = async (data: CreateTripForm): Promise<void> => {
         try {
             setLoading(true);
-            const auth = getAuth();
-            const date = dayjs(new Date()).format('DD/MM/YYYY')
-            setStartDate(date);
+            const auth: Auth = getAuth();
             if (auth.currentUser) {
                 const tripToCreate: CreateTripData = {
                     name: data.name,
-                    startDate: startDate ?? date,
+                    startDate: dayjs(startDate).format('DD/MM/YYYY'),
                     userId: auth.currentUser.uid,
                     resume: data.resume,
                     currentTrip: true,
@@ -41,10 +38,11 @@ export default function CreateWayStoryForm() {
         }
     }
 
-    const onChangeStartDate = (event: DateTimePickerEvent, selectedDate: Date | undefined) => {
+    const onChangeStartDate = (event: DateTimePickerEvent, selectedDate: Date | undefined): void => {
         setShowDatePicker(false);
         if (selectedDate) {
-            setStartDate(dayjs(selectedDate).format('DD/MM/YYYY'));
+            setStartDate(selectedDate);
+            console.log('selectedDate', selectedDate);
         }
     };
 
@@ -55,7 +53,7 @@ export default function CreateWayStoryForm() {
                     Platform.OS === 'ios' && (
                         <DateTimePicker
                             testID="dateTimePicker"
-                            value={date}
+                            value={startDate}
                             mode="date"
                             onChange={onChangeStartDate}
                         />
@@ -68,12 +66,12 @@ export default function CreateWayStoryForm() {
                                 Date de début
                             </Text>
                             <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-                                <Text style={styles.dateText}>{startDate ?? 'Sélectionner une date'}</Text>
+                                <Text style={styles.dateText}>{startDate.toLocaleDateString() ?? 'Sélectionner une date'}</Text>
                             </TouchableOpacity>
                             {showDatePicker && (
                                 <DateTimePicker
                                     testID="dateTimePicker"
-                                    value={date}
+                                    value={startDate}
                                     mode="date"
                                     onChange={onChangeStartDate}
                                 />

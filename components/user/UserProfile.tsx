@@ -2,7 +2,7 @@ import {Text} from "@rneui/themed";
 import {useEffect, useState} from "react";
 import {StyleSheet, View} from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import {getAuth} from "firebase/auth";
+import {Auth, getAuth} from "firebase/auth";
 import {getUserById} from "@/services/userService";
 import {Image} from 'expo-image';
 import {getAllTripsFinished} from "@/services/tripService";
@@ -16,7 +16,7 @@ export default function UserProfile() {
     const [waystoryCount, setWaystoryCount] = useState<number>(0);
 
     useEffect(() => {
-        const auth = getAuth();
+        const auth: Auth = getAuth();
         setUserLogged(auth.currentUser);
     }, []);
 
@@ -26,14 +26,12 @@ export default function UserProfile() {
         }
     }, [userLogged]);
 
-    const fetchUser = async () => {
-        if (userLogged) {
-            const user = await getUserById(userLogged.uid);
-            setUserName(user.username);
-            setWaystoryCount((await getAllTripsFinished()).length);
-            setBio(user.biographie ?? null);
-            setProfilePictureLink(user.profilePictureLink ?? null);
-        }
+    const fetchUser = async (): Promise<void> => {
+        const user = await getUserById(userLogged.uid);
+        setUserName(user.username);
+        setWaystoryCount((await getAllTripsFinished()).length);
+        setBio(user.biographie ?? null);
+        setProfilePictureLink(user.profilePictureLink ?? null);
     }
 
     return (

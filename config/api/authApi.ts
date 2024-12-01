@@ -1,5 +1,5 @@
 import { UserSignin, UserLogin } from '@/types/user';
-import { Auth, getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { Auth, getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { createApi, fakeBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export const authApi = createApi({
@@ -30,7 +30,3 @@ export const authApi = createApi({
         })
     }),
 })
-
-function signInWithEmailAndPassword(auth: Auth, email: string, password: string) {
-    throw new Error('Function not implemented.');
-}

@@ -8,23 +8,28 @@ import { getCurrentTrip, getTripByName } from '@/services/tripService';
 import { Picture } from '@/types/picture';
 import { getAllPicturesByUserIdAndTripId } from '@/services/pictureService';
 import LoadingScreen from '@/components/utils/LoadingScreen';
+import CustomDialogComponent from '@/components/dialog/CustomDialogComponent';
+import { Router, useRouter } from 'expo-router';
 
 export default function MapScreen() {
 
   const [trip, setTrip] = useState<Trip | null>(null);
   const [pictures, setPictures] = useState<Picture[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
+  const [loading, setLoading] = useState<boolean>(true);
+  const [search, setSearch] = useState<string>('');
+  const [isDialogVisible, setDialogVisible] = useState<boolean>(true);
+  const router: Router = useRouter();
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const tripData: TripFirestore = await getCurrentTrip();
-        console.log(tripData)
-        if (tripData.data) {
+        const tripData: TripFirestore | null = await getCurrentTrip();
+        if (tripData && tripData.data) {
           setTrip(tripData.data);
           const picturesSorted: Picture[] = await getAllPicturesByUserIdAndTripId(tripData.data.userId, tripData.id);
           setPictures(picturesSorted);
+        } else {
+          setDialogVisible(true);
         }
       } catch (error) {
         console.error("Error fetching data: ", error);
@@ -49,9 +54,26 @@ export default function MapScreen() {
     }
   };
 
+  const handleCloseDialog = (): void => {
+    setDialogVisible(false);
+    router.push("/");
+  };
+
 
   if (loading) {
     return <LoadingScreen />;
+  }
+
+  if (!trip) {
+    return (
+      <View style={styles.container}>
+        <CustomDialogComponent
+          visible={isDialogVisible}
+          message={"Vous n'avez pas de voyage en enregistré, veuillez en créer un puis ajouter une photo pour accéder à cette fonctionnalité."}
+          onClose={handleCloseDialog}
+          />
+      </View>
+    );
   }
 
   if (trip) {

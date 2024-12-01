@@ -1,5 +1,5 @@
 import {Button, Input} from '@rneui/themed';
-import {getAuth} from 'firebase/auth';
+import {Auth, getAuth} from 'firebase/auth';
 import {useEffect, useState} from 'react';
 import {useForm} from 'react-hook-form';
 import {StyleSheet, TextInput, TouchableOpacity, View} from 'react-native';
@@ -16,7 +16,6 @@ import {CreateTripForm} from "@/types/trip";
 export default function EditUserProfileForm() {
     const {handleSubmit} = useForm<CreateTripForm>();
     const [loading, setLoading] = useState(false);
-    const [newUserProfile, setNewUserProfile] = useState<UserProfilEdited | null>(null);
     const [imageProfile, setImageProfile] = useState<ImagePickerSuccessResult | undefined>(undefined);
     const [currentImageProfile, setCurrentImageProfile] = useState<string | undefined>(undefined);
     const [userName, setUserName] = useState<string | undefined>(undefined);
@@ -24,7 +23,7 @@ export default function EditUserProfileForm() {
 
     useEffect(() => {
         const fetchUser = async () => {
-            const auth = getAuth();
+            const auth: Auth = getAuth();
             if (auth.currentUser) {
                 const user: UserProfilEdited = await getUserById(auth.currentUser?.uid);
                 setCurrentImageProfile(user.profilePictureLink);
@@ -36,8 +35,8 @@ export default function EditUserProfileForm() {
         fetchUser();
     }, []);
 
-    const pickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
+    const pickImage = async (): Promise<void> => {
+        let result: ImagePicker.ImagePickerResult = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ['images'],
             allowsEditing: false,
             aspect: [4, 3],
@@ -49,10 +48,10 @@ export default function EditUserProfileForm() {
         }
     };
 
-    const onValidateEdit = async () => {
+    const onValidateEdit = async (): Promise<void> => {
         try {
             setLoading(true);
-            let profilePictureLink = currentImageProfile;
+            let profilePictureLink: string | undefined = currentImageProfile;
 
             if (imageProfile) {
                 const response = await uploadFile(imageProfile.assets[0]);
@@ -61,8 +60,8 @@ export default function EditUserProfileForm() {
 
             const updatedUserProfile: UserProfilEdited = {
                 username: userName,
-                biographie: bio,
-                profilePictureLink: (profilePictureLink ? profilePictureLink : "")
+                biographie: (bio ?? ""),
+                profilePictureLink: (profilePictureLink ?? "")
             };
 
             await updateUser(updatedUserProfile);
@@ -75,11 +74,11 @@ export default function EditUserProfileForm() {
         }
     }
 
-    const onChangeUserName = (name: string) => {
+    const onChangeUserName = (name: string): void => {
         setUserName(name);
     };
 
-    const onChangeBio = (bio: string) => {
+    const onChangeBio = (bio: string): void => {
         setBio(bio);
     }
 

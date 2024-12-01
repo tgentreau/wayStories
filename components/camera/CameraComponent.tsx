@@ -4,7 +4,7 @@ import {Animated, Button, StyleSheet, Text, TouchableOpacity, View} from "react-
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import * as Location from 'expo-location';
 import * as MediaLibrary from 'expo-media-library';
-import {getAuth} from "firebase/auth";
+import {Auth, getAuth, User} from "firebase/auth";
 import {uploadFile} from "@/config/aws/uploadFile";
 import {createPicture} from "@/services/pictureService";
 import {getCurrentTrip, updateTrip} from "@/services/tripService";
@@ -14,12 +14,12 @@ import {Trip, TripFirestore} from "@/types/trip";
 import {Picture} from "@/types/picture";
 
 export default function CameraComponent() {
-    const BASE_URL_AWS = "https://waystory.s3.eu-north-1.amazonaws.com/";
+    const BASE_URL_AWS: string = "https://waystory.s3.eu-north-1.amazonaws.com/";
     const [facing, setFacing] = useState<CameraType>('back');
     const [permission, requestPermission] = useCameraPermissions();
     const [, setLocation] = useState<Location.LocationObject | null>(null);
     const [currentTrip, setCurrentTrip] = useState<Trip | null>(null);
-    const [isDialogVisible, setDialogVisible] = useState(true);
+    const [isDialogVisible, setDialogVisible] = useState<boolean>(true);
     const [country, setCountry] = useState<string | null>(null);
     const cameraRef = useRef<CameraView>(null);
     const rotation = useRef(new Animated.Value(0)).current;
@@ -27,10 +27,12 @@ export default function CameraComponent() {
     useFocusEffect(
         useCallback(() => {
             (async () => {
-                const tripData: TripFirestore = await getCurrentTrip();
-                setCurrentTrip(tripData.data);
-                if (!tripData.data) {
-                    setDialogVisible(true);
+                const tripData: TripFirestore | null = await getCurrentTrip();
+                if (tripData) {
+                    setCurrentTrip(tripData.data);
+                    if (!tripData.data) {
+                        setDialogVisible(true);
+                    }
                 }
             })();
         }, [])
@@ -40,7 +42,7 @@ export default function CameraComponent() {
         (async () => {
             let {status} = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
-                console.log('Permission to access location was denied');
+                console.error('Permission to access location was denied');
                 return;
             }
         })();
@@ -60,7 +62,7 @@ export default function CameraComponent() {
         );
     }
 
-    function toggleCameraFacing() {
+    function toggleCameraFacing(): void {
         setFacing(current => (current === 'back' ? 'front' : 'back'));
         Animated.timing(rotation, {
             toValue: 1,
@@ -71,7 +73,7 @@ export default function CameraComponent() {
         });
     }
 
-    const rotateInterpolate = rotation.interpolate({
+    const rotateInterpolate: Animated.AnimatedInterpolation<string | number> = rotation.interpolate({
         inputRange: [0, 1],
         outputRange: ['0deg', '180deg'],
     });
@@ -80,10 +82,10 @@ export default function CameraComponent() {
         transform: [{rotate: rotateInterpolate}],
     };
 
-    async function takePicture() {
+    async function takePicture(): Promise<void> {
         if (cameraRef.current) {
-            let location = await Location.getCurrentPositionAsync({});
-            let reverseGeocode = await Location.reverseGeocodeAsync({
+            let location: Location.LocationObject = await Location.getCurrentPositionAsync({});
+            let reverseGeocode: Location.LocationGeocodedAddress[] = await Location.reverseGeocodeAsync({
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude,
             });
@@ -100,25 +102,25 @@ export default function CameraComponent() {
                     GPSAltitude: location.coords.altitude,
                 } : undefined
             };
-            const photo = await cameraRef.current.takePictureAsync(pictureOptions);
+            const photo: CameraCapturedPicture | undefined = await cameraRef.current.takePictureAsync(pictureOptions);
             if (photo && photo.exif.GPSLongitude && photo.exif.GPSLatitude) {
                 await savePicture(photo);
             }
         }
     }
 
-    const getFileName = (path: string) => {
+    const getFileName = (path: string): string => {
         const segments = path.split('/');
         return segments[segments.length - 1];
     };
 
-    const savePicture = async (photo: CameraCapturedPicture) => {
+    const savePicture = async (photo: CameraCapturedPicture): Promise<void> => {
         if (currentTrip) {
-            const auth = getAuth();
-            const user = auth.currentUser!;
+            const auth: Auth = getAuth();
+            const user: User = auth.currentUser!;
             await uploadFile(photo);
-            const tripId: string = await getCurrentTrip().then((trip) => trip.id);
-            const name = getFileName(photo.uri)
+            const tripId: string = await getCurrentTrip().then((trip) => trip ? trip.id : "");
+            const name: string = getFileName(photo.uri)
             const picture: Picture = await createPicture(
                 user.uid,
                 photo.exif.DateTimeOriginal,
@@ -141,7 +143,7 @@ export default function CameraComponent() {
         await MediaLibrary.saveToLibraryAsync(photo.uri);
     };
 
-    const handleCloseDialog = () => {
+    const handleCloseDialog = (): void => {
         setDialogVisible(false);
     };
 

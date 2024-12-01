@@ -16,10 +16,12 @@ const getUserById = async (id: string): Promise<DocumentData> => {
 const createUser = async (
     userId: string,
     username: string,
-    biographie?: string,
-    profilePictureLink?: string
+    biographieInput?: string,
+    profilePictureLinkInput?: string
 ): Promise<void> => {
     try {
+        const biographie = biographieInput ?? "";
+        const profilePictureLink = profilePictureLinkInput ?? "";
         await addDoc(userCollectionRef, {
             userId,
             username,

@@ -67,8 +67,11 @@ const getTripByName = async (name: string): Promise<TripFirestore> => {
 const getCurrentTrip = async (): Promise<TripFirestore | null> => {
     const auth: Auth = getAuth();
     if (auth.currentUser) {
-        const tripsCollectionQuery: Query<DocumentData, DocumentData> = query(tripsCollectionRef, where("userId", "==", auth.currentUser?.uid), where("currentTrip", "==", true));
+        const tripsCollectionQuery: Query<DocumentData, DocumentData> = query(tripsCollectionRef, where("userId", "==", auth.currentUser.uid), where("currentTrip", "==", true));
         const tripsCollectionSnapshot: QuerySnapshot<DocumentData, DocumentData> = await getDocs(tripsCollectionQuery);
+        if (tripsCollectionSnapshot.empty) {
+            return null;
+        }
         return {
             id: tripsCollectionSnapshot.docs[0].id,
             data: tripsCollectionSnapshot.docs[0].data() as Trip

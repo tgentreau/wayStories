@@ -30,7 +30,7 @@ export default function CurrentUserTrip() {
                 }
                 setLoading(false);
             } catch (error) {
-                console.error(error);
+                console.error('erreur lors de la récupération du current trip : ', error);
                 setLoading(false);
             }
         }

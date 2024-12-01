@@ -27,13 +27,11 @@ export default function UserProfile() {
     }, [userLogged]);
 
     const fetchUser = async (): Promise<void> => {
-        if (userLogged) {
-            const user = await getUserById(userLogged.uid);
-            setUserName(user.username);
-            setWaystoryCount((await getAllTripsFinished()).length);
-            setBio(user.biographie ?? null);
-            setProfilePictureLink(user.profilePictureLink ?? null);
-        }
+        const user = await getUserById(userLogged.uid);
+        setUserName(user.username);
+        setWaystoryCount((await getAllTripsFinished()).length);
+        setBio(user.biographie ?? null);
+        setProfilePictureLink(user.profilePictureLink ?? null);
     }
 
     return (

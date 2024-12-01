@@ -16,7 +16,6 @@ import {CreateTripForm} from "@/types/trip";
 export default function EditUserProfileForm() {
     const {handleSubmit} = useForm<CreateTripForm>();
     const [loading, setLoading] = useState(false);
-    const [newUserProfile, setNewUserProfile] = useState<UserProfilEdited | null>(null);
     const [imageProfile, setImageProfile] = useState<ImagePickerSuccessResult | undefined>(undefined);
     const [currentImageProfile, setCurrentImageProfile] = useState<string | undefined>(undefined);
     const [userName, setUserName] = useState<string | undefined>(undefined);
@@ -61,8 +60,8 @@ export default function EditUserProfileForm() {
 
             const updatedUserProfile: UserProfilEdited = {
                 username: userName,
-                biographie: bio,
-                profilePictureLink: (profilePictureLink ? profilePictureLink : "")
+                biographie: (bio ?? ""),
+                profilePictureLink: (profilePictureLink ?? "")
             };
 
             await updateUser(updatedUserProfile);
